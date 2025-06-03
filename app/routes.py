@@ -4,12 +4,14 @@
 from flask import Blueprint, jsonify
 
 main = Blueprint('main', __name__)
-
-@main.route('/api/info')
-def api_info():
+@main.route('/api/health', methods=['GET'])
+def api_health():
     return jsonify({
-        'project': 'TEPIS',
-        'maintainer': 'Sunny Aiden',
-        'email': 'sangsunlee.aiden@gmail.com',
-        'message': 'Welcome to the TEPIS Flask backend!'
+        'status': 'healthy'
+    })
+@main.route('/api/status', methods=['GET'])
+def api_status():
+    return jsonify({
+        'status': 'running',
+        'version': '1.0.0'
     })
