@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventSphere - Discover Events</title>
+    <link rel="preload" as="image" href="home.jpg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="eventsphere_website.html">
+                <div class="sphere-icon"></div>
+                EventSphere
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="eventsphere_website.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="events.html">Events</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Organizers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                </ul>
+                
+                <div class="search-container me-3">
+                    <input type="text" class="search-input" placeholder="Search for events, venues, or organizers...">
+                </div>
+                
+                <div class="user-menu">
+                    <i class="fas fa-bell" style="color: #64748b; font-size: 1.2rem;"></i>
+                    <div class="user-avatar">A</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Events Header -->
+    <section class="events-header">
+        <div class="container">
+            <!-- Interactive Search Banner -->
+            <div class="interactive-search-banner mb-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-8 col-md-6">
+                        <h2 class="search-banner-title">Find your perfect event</h2>
+                        <p class="search-banner-subtitle">Over 500+ events available for you to discover</p>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="quick-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search by event, artist, or venue">
+                                <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                        <div class="search-tags mt-2">
+                            <span class="search-tag">Music</span>
+                            <span class="search-tag">Art</span>
+                            <span class="search-tag">Sports</span>
+                            <span class="search-tag">Food</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="event-main-title">Explore Events</h1>
+                    <p class="events-subtitle">Discover amazing experiences happening near you</p>
+                    <div class="event-filter-tabs mt-4">
+                        <div class="filter-tab active">All Events</div>
+                        <div class="filter-tab">Today</div>
+                        <div class="filter-tab">This Week</div>
+                        <div class="filter-tab">This Weekend</div>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p class="results-count">Showing 120 events in New York area</p>
+                    <div class="d-inline-flex gap-2 mt-2">
+                        <button class="btn btn-outline-secondary"><i class="fas fa-sliders-h"></i> Filter</button>
+                        <button class="btn btn-outline-secondary"><i class="fas fa-sort-amount-down"></i> Sort</button>
+                        <button class="btn btn-outline-secondary"><i class="fas fa-map-marker-alt"></i> Map View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming this Month Calendar Section -->
+    <section class="calendar-section">
+        <div class="container">
+            <h2 class="section-title">Upcoming this Month</h2>
+            <p class="section-subtitle mb-4">Check out what's happening in June 2025</p>
+            
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-left"></i></button>
+                    <h4 class="calendar-month">June 2025</h4>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-view-toggle">
+                    <button class="btn btn-sm btn-outline-primary active">Month</button>
+                    <button class="btn btn-sm btn-outline-primary">List</button>
+                </div>
+            </div>
+            
+            <div class="calendar-grid">
+                <div class="calendar-days">
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+                </div>
+                <div class="calendar-dates">
+                    <!-- Previous month -->
+                    <div class="calendar-day faded">26</div>
+                    <div class="calendar-day faded">27</div>
+                    <div class="calendar-day faded">28</div>
+                    <div class="calendar-day faded">29</div>
+                    <div class="calendar-day faded">30</div>
+                    <div class="calendar-day faded">31</div>
+                    
+                    <!-- Current month -->
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day active">2
+                        <div class="day-event-indicator">3</div>
+                    </div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day">6
+                        <div class="day-event-indicator">1</div>
+                    </div>
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day">8
+                        <div class="day-event-indicator">2</div>
+                    </div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day highlighted">10
+                        <div class="day-event-indicator featured">5</div>
+                    </div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day">13</div>
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day highlighted">15
+                        <div class="day-event-indicator featured">4</div>
+                    </div>
+                    <div class="calendar-day">16</div>
+                    <div class="calendar-day highlighted">17
+                        <div class="day-event-indicator">2</div>
+                    </div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day">20
+                        <div class="day-event-indicator">1</div>
+                    </div>
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    
+                    <!-- Next month -->
+                    <div class="calendar-day faded">1</div>
+                    <div class="calendar-day faded">2</div>
+                    <div class="calendar-day faded">3</div>
+                    <div class="calendar-day faded">4</div>
+                    <div class="calendar-day faded">5</div>
+                    <div class="calendar-day faded">6</div>
+                </div>
+            </div>
+            
+            <div class="upcoming-highlights">
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="highlight-card">
+                            <div class="highlight-date">
+                                <span class="day">10</span>
+                                <span class="month">JUN</span>
+                            </div>
+                            <div class="highlight-info">
+                                <h4>Tech Conference 2025</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> Metropolitan Convention Center</p>
+                                <p><i class="fas fa-users"></i> 1200+ attending</p>
+                            </div>
+                            <div class="highlight-action">
+                                <button class="btn btn-sm btn-outline-primary">Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="highlight-card">
+                            <div class="highlight-date">
+                                <span class="day">15</span>
+                                <span class="month">JUN</span>
+                            </div>
+                            <div class="highlight-info">
+                                <h4>Summer Music Festival</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> Central Park Amphitheater</p>
+                                <p><i class="fas fa-users"></i> 5000+ attending</p>
+                            </div>
+                            <div class="highlight-action">
+                                <button class="btn btn-sm btn-outline-primary">Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Event -->
+    <section class="featured-events-grid">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="featured-event-large">
+                        <div class="event-image-hero" style="background: url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                            <div class="event-hero-overlay">
+                                <div class="event-category-badge">Featured Event</div>
+                                <div class="event-hero-content">
+                                    <div>
+                                        <h2 class="event-hero-title">Summer Music Festival 2025</h2>
+                                        <p class="text-white mb-0">June 15-17 • Central Park Amphitheater</p>
+                                    </div>
+                                    <div class="event-hero-rating">
+                                        <span>4.9</span>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span>(287 reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="featured-event-small">
+                        <div class="event-image-small" style="background: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                            <div class="event-small-overlay">
+                                <h3 class="event-small-title">Tech Conference</h3>
+                                <p class="event-small-subtitle">June 10 • Metropolitan Convention Center</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="featured-event-small">
+                        <div class="event-image-small" style="background: url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                            <div class="event-small-overlay">
+                                <h3 class="event-small-title">Concert Nightlife</h3>
+                                <p class="event-small-subtitle">June 8 • Madison Square Garden</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="featured-event-small">
+                        <div class="event-image-small" style="background: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                            <div class="event-small-overlay">
+                                <h3 class="event-small-title">Summer Beach Party</h3>
+                                <p class="event-small-subtitle">June 17 • Ocean Drive Beach</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events List -->
+    <section class="events-container">
+        <div class="container">
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-lg-3">
+                    <div class="filters-sidebar">
+                        <div class="filter-section">
+                            <h3 class="filter-title">Date</h3>
+                            <div class="filter-group">
+                                <label for="date-from">From</label>
+                                <input type="date" id="date-from" class="form-control filter-input" value="2025-06-02">
+                            </div>
+                            <div class="filter-group">
+                                <label for="date-to">To</label>
+                                <input type="date" id="date-to" class="form-control filter-input">
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <h3 class="filter-title">Event Categories</h3>
+                            <div class="category-filters">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="music-festivals" checked>
+                                    <label class="form-check-label" for="music-festivals">Music Festivals</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="food-wine">
+                                    <label class="form-check-label" for="food-wine">Food & Wine Events</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="outdoor-adventures">
+                                    <label class="form-check-label" for="outdoor-adventures">Outdoor Adventures</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="music-testing">
+                                    <label class="form-check-label" for="music-testing">Music Tasting</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="comedy-events">
+                                    <label class="form-check-label" for="comedy-events">Comedy Events</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="tech-conferences">
+                                    <label class="form-check-label" for="tech-conferences">Tech Conferences</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <h3 class="filter-title">Price Range</h3>
+                            <div class="price-filters">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="free-entry">
+                                    <label class="form-check-label" for="free-entry">Free Entry</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="under-50" checked>
+                                    <label class="form-check-label" for="under-50">Under $50</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="50-150" checked>
+                                    <label class="form-check-label" for="50-150">$50 - $150</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="150-500">
+                                    <label class="form-check-label" for="150-500">$150 - $500</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="luxury">
+                                    <label class="form-check-label" for="luxury">Luxury Experience</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <h3 class="filter-title">Attendee Reviews</h3>
+                            <div class="review-filters">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="all">
+                                    <label class="form-check-label" for="all">All</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="outstanding" checked>
+                                    <label class="form-check-label" for="outstanding">Outstanding</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="great-feedback">
+                                    <label class="form-check-label" for="great-feedback">Great Feedback</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="elite-class">
+                                    <label class="form-check-label" for="elite-class">Elite Class</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary filter-btn w-100">Apply Filters</button>
+                    </div>
+                </div>
+
+                <!-- Events List -->
+                <div class="col-lg-9">
+                    <div class="events-list">
+                        <!-- Event Item 1 -->
+                        <div class="event-item">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <div class="event-image-wrapper">
+                                        <div class="event-image-large" style="background: url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                                            <div class="event-overlay">
+                                                <span class="event-category">Concert Nightlife</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="event-details">
+                                        <h3 class="event-title-large">Concert Nightlife</h3>
+                                        <p class="event-description">Experience an unforgettable night of music and atmosphere with VIP access and exclusive lounge areas.</p>
+                                        
+                                        <div class="event-features">
+                                            <span class="feature-tag">VIP Access</span>
+                                            <span class="feature-tag">Drinks Included</span>
+                                            <span class="feature-tag">Exclusive Lounge</span>
+                                        </div>
+                                        
+                                        <div class="event-location">
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-map-marker-alt"></i></span>
+                                                <span class="location-value">0.5 miles from downtown</span>
+                                            </div>
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-calendar"></i></span>
+                                                <span class="location-value">Dec 9 - 12, 2 attendees, 1 ticket</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="event-pricing">
+                                        <div class="rating-badge outstanding">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.8</span>
+                                        </div>
+                                        <p class="price-large">$150</p>
+                                        <p class="price-note">3 nights, 2 persons</p>
+                                        <button class="btn view-options-btn">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Item 2 -->
+                        <div class="event-item">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <div class="event-image-wrapper">
+                                        <div class="event-image-large" style="background: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                                            <div class="event-overlay">
+                                                <span class="event-category">Comedy Club Live</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="event-details">
+                                        <h3 class="event-title-large">Comedy Club Live</h3>
+                                        <p class="event-description">Laugh the night away with top comedians and interactive comedy shows at the city's best venue.</p>
+                                        
+                                        <div class="event-features">
+                                            <span class="feature-tag">Comedy Acts</span>
+                                            <span class="feature-tag">Interactive Comedy Show</span>
+                                            <span class="feature-tag">No Minors</span>
+                                        </div>
+                                        
+                                        <div class="event-location">
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-map-marker-alt"></i></span>
+                                                <span class="location-value">1.2 miles from city center</span>
+                                            </div>
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-calendar"></i></span>
+                                                <span class="location-value">June 8, 2025</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="event-pricing">
+                                        <div class="rating-badge great">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.6</span>
+                                        </div>
+                                        <p class="price-large">$80</p>
+                                        <p class="price-note">2 nights, 1 person</p>
+                                        <button class="btn view-tickets-btn">View Tickets</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Item 3 -->
+                        <div class="event-item">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <div class="event-image-wrapper">
+                                        <div class="event-image-large" style="background: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                                            <div class="event-overlay">
+                                                <span class="event-category">Exclusive Music Fest</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="event-details">
+                                        <h3 class="event-title-large">Exclusive Music Fest</h3>
+                                        <p class="event-description">An exclusive musical experience featuring top artists and deluxe accommodations in a scenic venue.</p>
+                                        
+                                        <div class="event-features">
+                                            <span class="feature-tag">Early Bird Discount</span>
+                                            <span class="feature-tag">Deluxe Suite</span>
+                                            <span class="feature-tag">Ocean Room in Luxury Area</span>
+                                        </div>
+                                        
+                                        <div class="event-location">
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-map-marker-alt"></i></span>
+                                                <span class="location-value">3.5 mi from event center</span>
+                                            </div>
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-calendar"></i></span>
+                                                <span class="location-value">June 20-22, 2025</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="event-pricing">
+                                        <div class="rating-badge recommended">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.9</span>
+                                        </div>
+                                        <p class="price-large">$350</p>
+                                        <p class="price-note">3 nights, 2 persons</p>
+                                        <button class="btn explore-packages-btn">Explore Packages</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Item 4 -->
+                        <div class="event-item">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <div class="event-image-wrapper">
+                                        <div class="event-image-large" style="background: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;">
+                                            <div class="event-overlay">
+                                                <span class="event-category">Summer Beach Party</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="event-details">
+                                        <h3 class="event-title-large">Summer Beach Party</h3>
+                                        <p class="event-description">Dance the night away at this beachfront celebration with top DJs, beachfront cabanas, and outdoor shower facilities.</p>
+                                        
+                                        <div class="event-features">
+                                            <span class="feature-tag">On The Beachfront</span>
+                                            <span class="feature-tag">Beachfront Cabana</span>
+                                            <span class="feature-tag">Tiki King VIP Outdoor Shower</span>
+                                        </div>
+                                        
+                                        <div class="event-location">
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-map-marker-alt"></i></span>
+                                                <span class="location-value">Ocean Drive Beach</span>
+                                            </div>
+                                            <div class="location-item">
+                                                <span class="location-label"><i class="fas fa-calendar"></i></span>
+                                                <span class="location-value">June 17, 2025</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="event-pricing">
+                                        <div class="rating-badge limited">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.7</span>
+                                        </div>
+                                        <p class="price-large">$80</p>
+                                        <p class="price-note">2-days, General Admission</p>
+                                        <button class="btn book-now-btn">Book Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-wrapper">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location-based Event Suggestions -->
+    <section class="location-events">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="location-info">
+                        <h3>Events Near You</h3>
+                        <p class="mb-4">We've found some amazing events happening close to your location in New York.</p>
+                        <div class="location-selector">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <input type="text" class="form-control" value="New York, NY" placeholder="Enter your location">
+                                <button class="btn btn-primary">Update</button>
+                            </div>
+                        </div>
+                        <div class="distance-slider mt-4">
+                            <label for="distanceRange" class="form-label">Distance: <span>5 miles</span></label>
+                            <input type="range" class="form-range" min="1" max="50" value="5" id="distanceRange">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="location-events-grid">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="nearby-event-card">
+                                    <div class="event-distance">0.8 mi</div>
+                                    <div class="nearby-event-img" style="background: url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;"></div>
+                                    <div class="nearby-event-content">
+                                        <h4>Downtown Music Festival</h4>
+                                        <p><i class="fas fa-calendar"></i> June 8, 2025</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="nearby-price">$75</span>
+                                            <button class="btn btn-sm btn-primary">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="nearby-event-card">
+                                    <div class="event-distance">1.2 mi</div>
+                                    <div class="nearby-event-img" style="background: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;"></div>
+                                    <div class="nearby-event-content">
+                                        <h4>Tech Startup Meetup</h4>
+                                        <p><i class="fas fa-calendar"></i> June 5, 2025</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="nearby-price">Free</span>
+                                            <button class="btn btn-sm btn-primary">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="nearby-event-card">
+                                    <div class="event-distance">2.4 mi</div>
+                                    <div class="nearby-event-img" style="background: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;"></div>
+                                    <div class="nearby-event-content">
+                                        <h4>Wine Tasting Event</h4>
+                                        <p><i class="fas fa-calendar"></i> June 12, 2025</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="nearby-price">$45</span>
+                                            <button class="btn btn-sm btn-primary">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="nearby-event-card">
+                                    <div class="event-distance">3.1 mi</div>
+                                    <div class="nearby-event-img" style="background: url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;"></div>
+                                    <div class="nearby-event-content">
+                                        <h4>Jazz Night</h4>
+                                        <p><i class="fas fa-calendar"></i> June 9, 2025</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="nearby-price">$35</span>
+                                            <button class="btn btn-sm btn-primary">View</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to top button -->
+    <div class="back-to-top">
+        <button class="btn btn-primary rounded-circle" id="backToTopBtn">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- Brand and About -->
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-brand">
+                        <div class="sphere-icon"></div>
+                        EventSphere
+                    </div>
+                    <p class="mb-4">Discover and book the most exciting events happening in your city. From concerts to workshops, we've got you covered.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <a href="#">About Us</a>
+                    <a href="#">Browse Events</a>
+                    <a href="#">Categories</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact Us</a>
+                </div>
+
+                <!-- Support -->
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Support</h5>
+                    <a href="#">Help Center</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Contact Support</a>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Subscribe to Our Newsletter</h5>
+                    <p class="mb-3">Stay updated with the latest events and special offers</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email address" aria-label="Your email address">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <div class="mt-4">
+                        <p class="mb-1"><i class="fas fa-phone-alt me-2"></i> +1 (555) 123-4567</p>
+                        <p class="mb-0"><i class="fas fa-envelope me-2"></i> info@eventsphere.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2025 EventSphere. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Back to top button functionality
+        window.onscroll = function() {
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.style.display = "block";
+            } else {
+                backToTopBtn.style.display = "none";
+            }
+        };
+
+        document.getElementById('backToTopBtn').addEventListener('click', function() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        });
+
+        // Filter tab functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Calendar view toggle
+        document.querySelectorAll('.calendar-view-toggle .btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.calendar-view-toggle .btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Distance slider update
+        document.getElementById('distanceRange').addEventListener('input', function() {
+            const value = this.value;
+            const label = document.querySelector('.distance-slider label span');
+            label.textContent = value + ' miles';
+        });
+
+        // Search tags functionality
+        document.querySelectorAll('.search-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const searchInput = document.querySelector('.quick-search input');
+                searchInput.value = this.textContent;
+            });
+        });
+
+        // Calendar day click functionality
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function() {
+                if (!this.classList.contains('faded')) {
+                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Add smooth scroll animation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Event card hover animations
+        document.querySelectorAll('.event-item, .event-card, .nearby-event-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+                this.style.boxShadow = '0 12px 30px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+    </script>
+</body>
+</html>
