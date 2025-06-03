@@ -1,1 +1,1 @@
-<!-- project details -->
+<!-- Project details and setup instructions go here -->
