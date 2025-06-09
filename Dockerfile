@@ -1,11 +1,18 @@
-# Basic Dockerfile for Flask app
+# Use Python 3.11 slim image
 FROM python:3.11-slim
 
+# Set work directory
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
+# Copy application files
 COPY . .
 
-CMD ["python", "wsgi.py"]
+# Expose port
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "app/app.py"]

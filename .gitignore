@@ -5,3 +5,43 @@ instance/
 venv/
 .env.*
 .DS_Store
+
+# Python virtual environments
+env/
+.venv/
+ENV/
+
+# PyCharm and VS Code
+.idea/
+.vscode/
+*.code-workspace
+
+# Testing and coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Local development settings
+*.log
+*.sqlite
+*.db
+
+# System files
+Thumbs.db
+desktop.ini
+
+# Docker
+*.env
+.docker/
