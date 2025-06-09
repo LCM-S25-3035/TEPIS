@@ -81,7 +81,32 @@
     <!-- Events Section -->
     <div class="container">
         <div class="row">
-            
+            <!-- Left Side Content -->
+            <div class="col-lg-4">
+                <div class="left-sidebar">
+                    <h2 class="sidebar-title">Categories</h2>
+                    <div class="category-list">
+                        <div class="category-item active" data-category="all">
+                            All Events <span class="category-count">{{ total_events }}</span>
+                        </div>
+                        {% for category in categories %}
+                        <div class="category-item" data-category="{{ category._id }}">
+                            {{ category._id }} <span class="category-count">{{ category.count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <h2 class="sidebar-title mt-4">Location</h2>
+                    <div class="location-filter">
+                        <select class="form-select" id="locationFilter">
+                            <option value="all">All Locations</option>
+                            {% for location in locations %}
+                            <option value="{{ location._id }}">{{ location._id }} ({{ location.count }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
 
             <!-- Right Side - Events List -->
             <div class="col-lg-8">
