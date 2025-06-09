@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ dev, test ]
   pull_request:
     branches: [ dev ]
 
@@ -12,62 +12,78 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-
-
+    
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
-
+    
     steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run tests
+      run: |
+        python -m unittest discover -s tests -p '*_test.py'
 
-      # Step 1: Checkout the repository code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-
-      # Step 2: Set up Python environment
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-
-      # Step 3: Install Python dependencies
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-
-      # Step 4: Run test cases using pytest
-      - name: Run tests
-        run: |
-          pytest
-
-
-      # Step 5: Build Docker image from Dockerfile
-      - name: Build Docker image
-        run: |
-          docker build -t kamalipatel/tepis:latest .
-
-
-      # Step 6 (Optional): Push Docker image to Docker Hub or GitHub Container Registry
-      # Uncomment and configure the following steps if you want to publish the image
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # - name: Push Docker image
-      #   run: |
-      #     docker push kamalipatel/tepis:latest
   build:
-    runs-on: ubuntu-latest
     needs: test
-  
-  deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    # - name: Set up Docker Buildx
+    #   uses: docker/setup-buildx-action@v3
+    
+    # - name: Login to Docker Hub
+    #   uses: docker/login-action@v3
+    #   with:
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@v5
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: |
+    #       ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+    #       ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }}
+    #     cache-from: type=gha
+    #     cache-to: type=gha,mode=max
+
+  deploy:
     needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test'
+    environment: ${{ github.ref == 'refs/heads/dev' && 'production' || 'staging' }}
+     
+    steps:
+    - name: Deploy to environment
+      run: |
+        if [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+          echo "Deploying to production environment"
+          # Add production deployment commands here
+        else
+          echo "Deploying to staging environment"
+          # Add staging deployment commands here
+        fi
