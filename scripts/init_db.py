@@ -74,6 +74,21 @@ def fetch_event(event_title=None):
     db = client['TEPIS']
     events_collection = db['events']
     
+    # If event_title is provided, fetch specific event, otherwise fetch first event
+    if event_title:
+        event = events_collection.find_one({'event_title': event_title})
+    else:
+        event = events_collection.find_one()
+    
+    if event:
+        print("\nFound event:")
+        for key, value in event.items():
+            if key != '_id':  # Skip the MongoDB ID
+                print(f"{key}: {value}")
+    else:
+        print("No events found in the collection.")
+    
+    return event
 
 if __name__ == "__main__":
     # First create the collection and insert sample data
