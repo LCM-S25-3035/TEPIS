@@ -1,23 +1,38 @@
-# Main application entry for TEPIS
-# Maintained by Sunny Aiden (sangsunlee.aiden@gmail.com)
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory,jsonify
+import os
+from datetime import datetime
+from pymongo import MongoClient
 
+# Initialize Flask app
+app = Flask(__name__, 
+           template_folder='templates',
+           static_folder='static')
 
-from flask import Flask, render_template
-from app.routes import main
+# Load configuration
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
 
+@app.route('/')
+def index():
+    
+    return render_template('index.html')
 
-def create_app():
-    app = Flask(__name__)
-    app.register_blueprint(main)
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring."""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'version': '1.0.0'
+    })
 
-    @app.route("/")
-    def home():
-        return render_template("eventsphere_website.html")
+@app.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors."""
+    return jsonify({'error': 'Not found'}), 404
 
-    return app
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
-# This code initializes the Flask application for TEPIS, registering the main blueprint
-# and defining the home route that serves the main HTML page.
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    
+    app.run(host=host, port=port, debug=app.config['DEBUG'])
