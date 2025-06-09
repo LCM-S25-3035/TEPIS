@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEPIS - Login / Signup</title>
+    <link rel="preload" as="image" href="{{ url_for('static', filename='home.jpg') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/png">
+<body>
+<body class="auth-bg">
+    <div class="auth-container" id="authContainer">
+        <div class="auth-slide" id="authSlide">
+            <div>
+                <div class="auth-title" id="slideTitle">Welcome Back!</div>
+                <div class="auth-desc" id="slideDesc">Enter your personal details to use all of site features</div>
+                <button class="auth-btn" id="slideBtn">SIGN IN</button>
+            </div>
+        </div>
+        <div class="auth-form-section" id="authFormSection">
+            <a href="{{ url_for('index') }}" class="tepis-btn">TEPIS</a>
+            <form class="auth-form" id="loginForm">
+                <div class="form-title">Sign In</div>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+            <form class="auth-form" id="signupForm" style="display:none;">
+                <div class="form-title">Create Account</div>
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="submit-btn">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Sliding logic (no tab buttons, click on left/right panels)
+        const authContainer = document.getElementById('authContainer');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const slideTitle = document.getElementById('slideTitle');
+        const slideDesc = document.getElementById('slideDesc');
+        const slideBtn = document.getElementById('slideBtn');
+        const authSlide = document.getElementById('authSlide');
+        const authFormSection = document.getElementById('authFormSection');
+
+        function setMode(isSignup) {
+            if (isSignup) {
+                authContainer.classList.add('signup-mode');
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'flex';
+                slideTitle.textContent = 'Hello, Friend!';
+                slideDesc.textContent = 'Register with your personal details to use all of site features';
+                slideBtn.textContent = 'SIGN UP';
+            } else {
+                authContainer.classList.remove('signup-mode');
+                loginForm.style.display = 'flex';
+                signupForm.style.display = 'none';
+                slideTitle.textContent = 'Welcome Back!';
+                slideDesc.textContent = 'Enter your personal details to use all of site features';
+                slideBtn.textContent = 'SIGN IN';
+            }
+        }
+
+        // Click on left (slide) = login, click SIGN UP button = signup
+        authSlide.onclick = function(e) {
+            // If in signup mode, switch to login (anywhere on purple panel)
+            if (authContainer.classList.contains('signup-mode')) setMode(false);
+            // If in login mode and clicking the SIGN UP button, switch to signup
+            else if (e.target === slideBtn) setMode(true);
+        };        // Prevent default form submit for demo
+        loginForm.onsubmit = signupForm.onsubmit = function(e) {
+            e.preventDefault();
+            alert('Welcome to TEPIS! Redirecting to homepage...');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
