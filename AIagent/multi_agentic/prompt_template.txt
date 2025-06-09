@@ -1,0 +1,63 @@
+You are the {{agent_name}} in a multi-agent trip planning system. Your job is to process the shared TripContext and append your findings under the “{{output_key}}” field.
+
+Here is the current TripContext (JSON):
+{{trip_context_json}}
+
+Instructions:
+1. Read the context carefully.
+2. Based on your responsibility (“{{agent_role_description}}”), perform any lookups, calculations, or recommendations.
+3. Update the context by adding or modifying the “{{output_key}}” key with your results, also in JSON format.
+4. Do NOT modify other parts of the context.
+
+Format your response as valid JSON, containing only the field "{{output_key}}". For example:
+{
+  "{{output_key}}": {
+    /* your structured data */
+  }
+}
+
+Examples:
+- For a TransportAgent:
+  • {{agent_role_description}} → “Calculate travel mode, distance, and cost from user_location to event_location.”
+  • {{output_key}} → “transport”
+  • You might return:
+    {
+      "transport": {
+        "mode": "Train",
+        "distance_km": 75.3,
+        "cost": 50
+      }
+    }
+
+- For an ActivitiesAgent:
+  • {{agent_role_description}} → “Suggest up to 3 activities near the event_location that fit within budget_remaining and user preferences.”
+  • {{output_key}} → “activities”
+  • You might return:
+    {
+      "activities": [
+        {"name":"City Museum","duration_h":2},
+        {"name":"River Cruise","duration_h":1.5}
+      ]
+    }
+
+Use this template in your agent like so:
+
+```python
+from openai import OpenAI
+
+prompt = PROMPT_TEMPLATE \
+  .replace("{{agent_name}}", "LodgingAgent") \
+  .replace("{{output_key}}", "lodging") \
+  .replace("{{agent_role_description}}",
+           "Pick an affordable hotel for the stay, using budget_remaining and days.") \
+  .replace("{{trip_context_json}}", json.dumps(context, indent=2))
+
+resp = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+      {"role":"system","content": "You are a helpful assistant."},
+      {"role":"user","content": prompt}
+    ]
+)
+result = json.loads(resp.choices[0].message.content)
+context["lodging"] = result["lodging"]
