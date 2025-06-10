@@ -18,14 +18,14 @@ default_args={
 }
 
 ## DAG
-with DAG(dag_id='weather_etl_pipeline',
+with DAG(dag_id='etl_pipeline',
          default_args=default_args,
          schedule_interval='@daily',
          catchup=False) as dags:
     
     @task()
     def extract_weather_data():
-        """Extract weather data from Open-Meteo API using Airflow Connection."""
+        """Extract data from Open-Meteo API using Airflow Connection."""
 
         # Use HTTP Hook to get connection details from Airflow connection
 
