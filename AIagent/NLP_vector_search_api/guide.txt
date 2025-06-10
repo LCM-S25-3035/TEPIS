@@ -1,0 +1,23 @@
+What it is & Why
+You embed all your “assets” (events, hotels, attractions) into a vector store so that you can do semantic search on user queries or preferences. E.g., a user says “I want a boutique hotel near the stadium,” and you retrieve the top-k most semantically similar hotel descriptions—even if your text doesn’t contain “boutique” or “stadium.”
+
+How to Build
+Generate Embeddings
+
+Use a free model from the Sentence-Transformers library (e.g. all-MiniLM-L6-v2).
+
+For each document (hotel listing, POI description), compute and store its embedding.
+
+Vector Store
+
+FAISS (Facebook AI Similarity Search) or Milvus are both open-source.
+
+Ingest your embeddings into FAISS indexes on disk.
+
+Query Pipeline
+
+When user submits free-text prefs (“cozy rooms, under $100, 2 km from event”), embed that query.
+
+index.search(query_embedding, k=10) returns the top matches.
+
+Filter those by hard constraints (budget, distance).
