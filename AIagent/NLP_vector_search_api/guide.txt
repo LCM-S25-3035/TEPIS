@@ -21,3 +21,29 @@ When user submits free-text prefs (“cozy rooms, under $100, 2 km from event”
 index.search(query_embedding, k=10) returns the top matches.
 
 Filter those by hard constraints (budget, distance).
+
+
+8. Hybrid Recommender System (Collaborative + Content-Based Filtering)
+What & Why
+A hybrid recommender blends content-based filtering (matching user keywords to place descriptions) with collaborative filtering (leveraging past users’ trip histories or ratings). This can personalize recommendations (hotels, attractions, restaurants) based both on what the user says they like (content) and what similar users actually enjoyed (collaborative). It helps guard against “filter bubbles” of purely content-based systems and overcomes cold-start issues in pure collaborative systems.
+
+How to Build
+Collect & Prepare Data
+
+Content Data: For each asset (hotel, POI, restaurant), gather textual features: description, category, tags, price bracket, location.
+
+Interaction Data: Log user actions—“booked this hotel,” “visited this attraction,” “liked this restaurant.” Store as simple user–item interactions in MongoDB (e.g. { user_id, item_id, rating }, even implicit ratings like clicks).
+
+Compute Content Embeddings
+
+Use a sentence-transformer (e.g. all-MiniLM-L6-v2) to encode each item’s textual features into a fixed-length vector.
+
+Store these embeddings in FAISS for fast nearest-neighbor lookup.
+
+Train a Collaborative Model
+
+Use the Surprise library (open-source, MIT license) for collaborative filtering.
+
+Load your interaction dataset into Surprise’s Dataset.
+
+Train an SVD or KNNBasic model to predict a user’s rating for unseen items:
