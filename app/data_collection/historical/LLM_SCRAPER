@@ -1,0 +1,83 @@
+# This example conceptually builds on the previous scrape_static_event and extract_event_data_with_llm functions.
+# It demonstrates the conceptual flow rather than a fully runnable example due to LLM inference time and external dependencies.
+
+# Assume fetch_html(url) (from requests or Playwright) and
+# extract_event_data_with_llm(html_snippet, url) (from Approach 1) are defined and functional.
+
+# For this conceptual example, let's define a placeholder fetch_html for clarity.
+def fetch_html(url):
+    """Placeholder to simulate fetching HTML. In a real scenario, this would use requests or Playwright."""
+    print(f"Simulating fetch of HTML from {url}...")
+    # This is where you'd put requests.get(url).text or Playwright's page.content()
+    # For demonstration, we'll return a predefined HTML string.
+    if url == "http://example.com/events":
+        return """
+        <html><body>
+            <div class="header"><h1>Upcoming Events</h1></div>
+            <div class="event-card" data-event-id="1">
+                <h3 class="event-title">Local Farmers Market</h3>
+                <p class="date">Every Saturday, 8 AM - 1 PM</p>
+                <p class="location">Town Square, Downtown</p>
+                <p class="description">Fresh produce, artisanal goods, and community spirit. Free admission.</p>
+                <a href="/farmers-market">Details</a>
+            </div>
+            <div class="event-card" data-event-id="2">
+                <h3 class="event-title">Annual Jazz Festival</h3>
+                <p class="date">August 15-17, 2025</p>
+                <p class="location">City Park</p>
+                <p class="description">Three days of live jazz performances. Tickets required, check website for pricing.</p>
+                <a href="/jazz-fest">Details</a>
+            </div>
+            <div class="footer">Contact us at info@example.com</div>
+        </body></html>
+        """
+    return ""
+
+def hybrid_scrape_and_extract(url):
+    """
+    Performs hybrid scraping: fetches full HTML, uses BeautifulSoup to find event blocks,
+    then uses LLM to extract details from each block.
+    """
+    try:
+        # Step 1: Fetch the full HTML content (can be static via requests or dynamic via Playwright)
+        full_html = fetch_html(url)
+        if not full_html:
+            print("Failed to fetch full HTML.")
+            return
+
+        # Step 2: Use BeautifulSoup to parse the HTML and identify event blocks
+        soup = BeautifulSoup(full_html, 'html.parser')
+        # Assuming events are in a list of divs with class 'event-card'
+        event_card_elements = soup.select(".event-card")
+        print(f"Identified {len(event_card_elements)} event blocks using BeautifulSoup.")
+
+        extracted_events =
+        for i, card_elem in enumerate(event_card_elements):
+            # Step 3: Feed each event block's HTML to the LLM for structured extraction
+            event_html_snippet = str(card_elem)
+            # Construct a more specific URL for the event if available, otherwise use base URL
+            event_detail_url = url # Placeholder, ideally extracted from 'card_elem'
+            
+            print(f"  Processing event block {i+1} with LLM...")
+            # This call assumes extract_event_data_with_llm is defined as in Approach 1
+            # and that the LLM model (tokenizer, model) is loaded globally or passed.
+            extracted_data = extract_event_data_with_llm(event_html_snippet, event_detail_url)
+            if extracted_data:
+                extracted_events.append(extracted_data)
+            else:
+                print(f"  LLM extraction failed for block {i+1}.")
+        return extracted_events
+
+    except Exception as e:
+        print(f"An error occurred during hybrid scraping: {e}")
+        return
+
+# To run this, you would need to have the Jina ReaderLM-v2 model loaded (from Approach 1 setup).
+# Also, replace 'http://example.com/events' with an actual URL for real-world testing.
+# For this conceptual example, the HTML is hardcoded in fetch_html.
+# collected_events = hybrid_scrape_and_extract('http://example.com/events')
+# print("\n--- Collected Events via Hybrid AI Scraper (Conceptual) ---")
+# for event in collected_events:
+#     print(f"Title: {event.title}, Date: {event.date}, Location: {event.location}, Is Free: {event.is_free}")
+#     print("-" * 20)
+print("\n(Note: The hybrid scraping example above is conceptual. It requires a live URL with '.event-card' elements and a loaded LLM from Approach 1.)")
