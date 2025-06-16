@@ -74,18 +74,19 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test'
-    environment: ${{ github.ref == 'refs/heads/dev' && 'production' || 'staging' }}
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test'
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
      
     steps:
     - name: Deploy to environment
       run: |
-        if [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
           echo "Deploying to production environment"
           # Add production deployment commands here
         else
           echo "Deploying to staging environment"
-          # Add staging deployment commands here        fi
+          # Add staging deployment commands here
+        fi
         
         # AWS EC2 Deployment:
         
