@@ -85,5 +85,23 @@ jobs:
           # Add production deployment commands here
         else
           echo "Deploying to staging environment"
-          # Add staging deployment commands here
-        fi
+          # Add staging deployment commands here        fi
+        
+        # AWS EC2 Deployment:
+        
+        # - name: Deploy to EC2
+        #   uses: appleboy/ssh-action@v0.1.5
+        #   with:
+        #     host: ${{ secrets.EC2_HOST }}
+        #     username: ${{ secrets.EC2_USERNAME }}
+        #     key: ${{ secrets.EC2_SSH_KEY }}
+        #     script: |
+        #       cd /path/to/your/app
+        #       git pull origin main
+        #       pip install -r requirements.txt
+        #       sudo systemctl restart your-app-service
+        
+        # Required GitHub Secrets for EC2 deployment:
+        # EC2_HOST - Your EC2 instance public IP or domain
+        # EC2_USERNAME - EC2 username (usually ubuntu or ec2-user)
+        # EC2_SSH_KEY - Your private SSH key content
