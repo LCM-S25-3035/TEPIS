@@ -33,3 +33,55 @@ class BaseAgent(ABC):
             return response.choices[0].message.content
         except Exception as e:
             return f"Error: {str(e)}"
+        
+        
+# Install dependencies:
+# pip install langchain-huggingface transformers torch
+
+import os, json
+from getpass import getpass
+from langchain_core.prompts import PromptTemplate
+from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
+from transformers import pipeline
+
+# ——— 1. Authenticate
+if not os.getenv("HUGGINGFACEHUB_API_TOKEN"):
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = getpass("Enter your HF token: ")
+
+# ——— 2. Create a template with variable and JSON instruction
+template = """
+Extract the following field from user input:
+User says: "{user_input}"
+
+Return output as strict JSON with keys: "length", "words".
+Example: {{ "length": 5, "words": 1 }}
+ONLY return the JSON output and nothing else.
+"""
+prompt = PromptTemplate.from_template(template)
+
+# ——— 3. Load local or hosted model
+# Local pipeline
+# pipe = pipeline("text-generation", model="gpt2", tokenizer="gpt2", max_new_tokens=50, return_full_text=False)
+# llm = HuggingFacePipeline(pipeline=pipe)
+
+# Or hosted endpoint mode
+from langchain_huggingface import HuggingFaceEndpoint
+ep = HuggingFaceEndpoint(repo_id="mistralai/Mistral-7B-Instruct-v0.2", task="text-generation", max_new_tokens=50)
+llm = ChatHuggingFace(llm=ep)
+
+# ——— 4. Build and run chain
+from langchain_core.runnables import Runnable
+
+chain = prompt | llm
+
+user_var = "Hello world!"
+resp = chain.invoke({"user_input": user_var})
+raw = resp.content.strip()
+
+# ——— 5. Parse JSON safely
+try:
+    j = json.loads(raw)
+except json.JSONDecodeError as e:
+    raise ValueError(f"Invalid JSON:\n{raw}") from e
+
+print("Parsed JSON output:", j)
