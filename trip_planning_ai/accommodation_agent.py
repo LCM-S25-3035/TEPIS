@@ -1,30 +1,53 @@
-from typing import Dict, Any
-from agents.base_agent import BaseAgent
+# Install dependencies:
+# pip install langchain-huggingface transformers torch
 
-class AccommodationAgent(BaseAgent):
-    """Agent specialized in finding accommodations"""
-    
-    def __init__(self):
-        super().__init__("Accommodation Agent")
-    
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Find suitable accommodations"""
-        
-        destination = input_data.get("destination", "the destination")
-        budget = input_data.get("budget", "medium")
-        travelers = input_data.get("travelers", 1)
-        start_date = input_data.get("start_date", "")
-        end_date = input_data.get("end_date", "")
-        
-        system_prompt = """You are an accommodation expert. Recommend suitable hotels, hostels, or other lodging options based on destination, budget, and group size. Provide specific recommendations with estimated prices."""
-        
-        user_prompt = f"""Find accommodations in {destination} for {travelers} travelers from {start_date} to {end_date} with a {budget} budget. 
-        Suggest 3 different options (like hotel, hostel, Airbnb) with approximate prices and key amenities."""
-        
-        response = self._make_llm_call(system_prompt, user_prompt)
-        
-        return {
-            "agent": self.name,
-            "accommodations": response,
-            "status": "completed"
-        }
+import os, json
+from getpass import getpass
+from langchain_core.prompts import PromptTemplate
+from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
+from transformers import pipeline
+
+# ——— 1. Authenticate
+if not os.getenv("HUGGINGFACEHUB_API_TOKEN"):
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = getpass("Enter your HF token: ")
+
+# ——— 2. Create hotel recommendation prompt template
+hotel_prompt_template = """
+Generate a list of 5 famous hotels in {destination}. Format the response as JSON only:
+
+{{
+  "hotels": [
+    {{
+      "name": "Hotel Name",
+      "description": "Brief description of the hotel",
+      "rating": 4.5,
+      "price_category": "Luxury"
+    }}
+  ]
+}}
+Return only the JSON. No explanations.
+"""
+
+prompt = PromptTemplate.from_template(hotel_prompt_template)
+
+# ——— 3. Load hosted endpoint model
+from langchain_huggingface import HuggingFaceEndpoint
+ep = HuggingFaceEndpoint(repo_id="mistralai/Mistral-7B-Instruct-v0.2", task="text-generation", max_new_tokens=512)
+llm = ChatHuggingFace(llm=ep)
+
+# ——— 4. Build and run chain
+from langchain_core.runnables import Runnable
+
+chain = prompt | llm
+
+destination = "Toronto"
+resp = chain.invoke({"destination": destination})
+raw = resp.content.strip()
+
+# ——— 5. Parse JSON safely
+try:
+    j = json.loads(raw)
+except json.JSONDecodeError as e:
+    raise ValueError(f"Invalid JSON:\n{raw}") from e
+
+print("Parsed JSON output:", json.dumps(j, indent=2))
