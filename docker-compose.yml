@@ -4,26 +4,14 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"    
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/TEPIS
-    depends_on:
-      - mongodb
+      - "5000:5000"
+  # environment:
+  #   - MONGODB_URI=your-atlas-uri-here
     volumes:
       - .:/app
-    networks:
-      - app-network
+  # networks:
+  #   - app-network
 
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  mongodb_data:
-    driver: local
+# networks:
+#   app-network:
+#     driver: bridge
