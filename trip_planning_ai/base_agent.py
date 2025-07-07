@@ -1,17 +1,29 @@
+
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 import openai
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Set up basic logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class BaseAgent(ABC):
     """Base class for all AI agents"""
     
     def __init__(self, name: str):
         self.name = name
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            logging.warning("OPENAI_API_KEY not found in environment variables.")
+        try:
+            self.client = openai.OpenAI(api_key=api_key)
+        except Exception as e:
+            logging.error(f"Failed to initialize OpenAI client: {e}")
+            self.client = None
     
     @abstractmethod
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -20,6 +32,9 @@ class BaseAgent(ABC):
     
     def _make_llm_call(self, system_prompt: str, user_prompt: str) -> str:
         """Make a call to the LLM"""
+        if not self.client:
+            logging.error("OpenAI client is not initialized.")
+            return "Error: OpenAI client is not initialized."
         try:
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -32,6 +47,7 @@ class BaseAgent(ABC):
             )
             return response.choices[0].message.content
         except Exception as e:
+            logging.error(f"LLM call failed: {e}")
             return f"Error: {str(e)}"
         
         
