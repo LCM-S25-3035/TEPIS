@@ -33,7 +33,7 @@
                 </ul>
                 
                 <div class="search-container me-3">
-                    <input type="text" class="search-input" placeholder="Search for events, venues, or organizers...">
+                    <input type="text" class="search-input" placeholder="Search for events, venues, or organizers..." aria-label="Search events, venues, or organizers">
                 </div>
                 
                 <div class="user-menu">
@@ -50,7 +50,7 @@
             <div class="hero-content">
                 <h1>Discover Your Next Unforgettable Event</h1>
                 <p>Find concerts, workshops, festivals, and more near you</p>
-                <button class="cta-button" id="browseEventsBtn">Browse All Events</button>
+                <button class="cta-button" id="browseEventsBtn" type="button">Browse All Events</button>
                 <script>
                     document.getElementById('browseEventsBtn').addEventListener('click', function() {
                         window.location.href = "{{ url_for('events') }}";
@@ -220,8 +220,12 @@
                     <h5>Subscribe to Our Newsletter</h5>
                     <p class="mb-3">Stay updated with the latest events and special offers</p>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Enter your email" style="background: #334155; border: none; color: white; padding: 12px;">
-                        <button class="btn btn-primary" type="button" style="background: #6366f1; border: none;">Subscribe</button>
+                        <form class="w-100" autocomplete="off" aria-label="Subscribe to newsletter">
+                            <div class="input-group mb-3">
+                                <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email address for newsletter" style="background: #334155; border: none; color: white; padding: 12px;">
+                                <button class="btn btn-primary" type="submit" style="background: #6366f1; border: none;">Subscribe</button>
+                            </div>
+                        </form>
                     </div>
                     <div class="mt-4">
                         <p class="mb-2"><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</p>

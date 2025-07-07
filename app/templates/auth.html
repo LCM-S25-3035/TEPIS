@@ -25,15 +25,15 @@
             <a href="{{ url_for('index') }}" class="tepis-btn">TEPIS</a>
             <form class="auth-form" id="loginForm">
                 <div class="form-title">Sign In</div>
-                <input type="email" placeholder="Email" required>
-                <input type="password" placeholder="Password" required>
+                <input type="email" placeholder="Email" aria-label="Email address" required>
+                <input type="password" placeholder="Password" aria-label="Password" required>
                 <button type="submit" class="submit-btn">Login</button>
             </form>
             <form class="auth-form" id="signupForm" style="display:none;">
                 <div class="form-title">Create Account</div>
-                <input type="text" placeholder="Name" required>
-                <input type="email" placeholder="Email" required>
-                <input type="password" placeholder="Password" required>
+                <input type="text" placeholder="Name" aria-label="Full name" required>
+                <input type="email" placeholder="Email" aria-label="Email address" required>
+                <input type="password" placeholder="Password" aria-label="Password" required>
                 <button type="submit" class="submit-btn">Sign Up</button>
             </form>
         </div>
