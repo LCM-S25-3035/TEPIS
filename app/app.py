@@ -1,37 +1,53 @@
 from flask import Flask, render_template, request
 from datetime import datetime
+import json
+from pymongo import MongoClient
+from bson import ObjectId
 import re
 
 app = Flask(__name__)
 
-# Mock events data (replace with your own or load from a file)
-mock_events = [
-    {
-        '_id': '68433ba8abdc1a99e3304d10',
-        'event_title': 'Oktoberfest Munich',
-        'event_type': 'Festival',
-        'country_name': 'Germany',
-        'state_name': 'Bavaria',
-        'city_name': 'Munich',
-        'ticket_price': 'From $49',
-        'start_date': '2024-09-29',
-        'end_date': '2024-10-02'
-    }
-    # Add more mock events as needed
-]
+# MongoDB Atlas connection
+mongo_uri = "mongodb+srv://TEPIS:TEPIS355@cluster0.lu5p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(mongo_uri)
+db = client["ticketmaster"]
+collection = db["events"]
 
-# Function to get all events (mocked)
+# Function to get all events from MongoDB
 def get_all_events():
-    return mock_events
+    try:
+        events = list(collection.find())
+        # Convert ObjectId to string for JSON serialization
+        for event in events:
+            event['_id'] = str(event['_id'])
+            # Convert datetime objects to string if they exist
+            if 'start_date' in event and hasattr(event['start_date'], 'strftime'):
+                event['start_date'] = event['start_date'].strftime('%Y-%m-%d')
+            if 'end_date' in event and hasattr(event['end_date'], 'strftime'):
+                event['end_date'] = event['end_date'].strftime('%Y-%m-%d')
+        return events
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {e}")
+        return []
 
-# Function to get a single event by ID (mocked)
+# Function to get a single event by ID
 def get_event_by_id(event_id):
-    for event in mock_events:
-        if event['_id'] == event_id:
-            return event
-    return None
+    try:
+        # Your database uses string IDs, not ObjectIds
+        event = collection.find_one({"_id": event_id})
+        if event:
+            event['_id'] = str(event['_id'])
+            # Convert datetime objects to string if they exist
+            if 'start_date' in event and hasattr(event['start_date'], 'strftime'):
+                event['start_date'] = event['start_date'].strftime('%Y-%m-%d')
+            if 'end_date' in event and hasattr(event['end_date'], 'strftime'):
+                event['end_date'] = event['end_date'].strftime('%Y-%m-%d')
+        return event
+    except Exception as e:
+        print(f"Error getting event by ID: {e}")
+        return None
 
-# Cache for events data to avoid repeated calls
+# Cache for events data to avoid repeated database calls
 events_cache = None
 
 def get_events_data():
@@ -44,9 +60,12 @@ def get_events_data():
 def get_price_tier_from_ticket_price(ticket_price):
     if not ticket_price:
         return "Others"
+    
+    # Handle both string and numeric inputs
     if isinstance(ticket_price, (int, float)):
         price = float(ticket_price)
     else:
+        # Extract price number from string like "From $49"
         price_match = re.search(r'\$([0-9,]+)', str(ticket_price))
         if price_match:
             price_str = price_match.group(1).replace(',', '')
@@ -56,6 +75,7 @@ def get_price_tier_from_ticket_price(ticket_price):
                 return "Others"
         else:
             return "Others"
+    
     if price <= 100:
         return "Moderate"
     elif price <= 500:
@@ -63,37 +83,70 @@ def get_price_tier_from_ticket_price(ticket_price):
     else:
         return "Luxury"
 
-# Mock itinerary data
+# Mock itinerary data based on the provided structure
 itinerary_data = {
-    "68433ba8abdc1a99e3304d10": {
+    "68433ba8abdc1a99e3304d10": {  # Oktoberfest Munich
         "itinerary": [
             {
                 "day": 1,
                 "location": "Munich Airport",
                 "activities": [
-                    {"time": "9:00 AM", "description": "Airport transfer to hotel"},
-                    {"time": "2:00 PM", "description": "Historic Munich walking tour"},
-                    {"time": "6:00 PM", "description": "Traditional Bavarian dinner"}
+                    {
+                        "time": "9:00 AM",
+                        "description": "Airport transfer to hotel"
+                    },
+                    {
+                        "time": "2:00 PM",
+                        "description": "Historic Munich walking tour"
+                    },
+                    {
+                        "time": "6:00 PM",
+                        "description": "Traditional Bavarian dinner"
+                    }
                 ]
             },
             {
                 "day": 2,
                 "location": "Oktoberfest Grounds",
                 "activities": [
-                    {"time": "10:00 AM", "description": "Enter the festival grounds and explore beer halls"},
-                    {"time": "12:00 PM", "description": "Traditional Bavarian lunch and beer tasting"},
-                    {"time": "3:00 PM", "description": "Enjoy rides and traditional games"}
+                    {
+                        "time": "10:00 AM",
+                        "description": "Enter the festival grounds and explore beer halls"
+                    },
+                    {
+                        "time": "12:00 PM",
+                        "description": "Traditional Bavarian lunch and beer tasting"
+                    },
+                    {
+                        "time": "3:00 PM",
+                        "description": "Enjoy rides and traditional games"
+                    }
                 ]
             },
             {
                 "day": 3,
                 "location": "Neuschwanstein Castle",
                 "activities": [
-                    {"time": "9:00 AM", "description": "Begin your day with a hearty breakfast at a nearby café"},
-                    {"time": "10:00 AM", "description": "Explore the magnificent Neuschwanstein Castle and its surroundings"},
-                    {"time": "1:00 PM", "description": "Enjoy lunch with panoramic views of the Bavarian Alps"},
-                    {"time": "3:30 PM", "description": "Visit the nearby Hohenschwangau Castle"},
-                    {"time": "5:30 PM", "description": "Return to Munich for your final evening celebration"}
+                    {
+                        "time": "9:00 AM",
+                        "description": "Begin your day with a hearty breakfast at a nearby café"
+                    },
+                    {
+                        "time": "10:00 AM",
+                        "description": "Explore the magnificent Neuschwanstein Castle and its surroundings"
+                    },
+                    {
+                        "time": "1:00 PM",
+                        "description": "Enjoy lunch with panoramic views of the Bavarian Alps"
+                    },
+                    {
+                        "time": "3:30 PM",
+                        "description": "Visit the nearby Hohenschwangau Castle"
+                    },
+                    {
+                        "time": "5:30 PM",
+                        "description": "Return to Munich for your final evening celebration"
+                    }
                 ]
             }
         ],
@@ -118,7 +171,9 @@ def get_stats():
     events = get_events_data()
     total_events = len(events)
     unique_countries = len(set(event.get('country_name', 'Unknown') for event in events if event.get('country_name')))
-    happy_travelers = min(total_events * 125, 10000)
+    # Calculate estimated happy travelers (based on events)
+    happy_travelers = min(total_events * 125, 10000)  # Cap at 10k
+    
     return {
         'total_events': total_events,
         'countries': unique_countries,
@@ -127,40 +182,60 @@ def get_stats():
 
 # Helper function to get filter counts
 def get_filter_counts():
-    events = get_events_data()
-    # Categories
-    categories = {}
-    for event in events:
-        cat = event.get('event_type', 'Others') or 'Others'
-        categories[cat] = categories.get(cat, 0) + 1
-    # States
-    states = {}
-    for event in events:
-        state = event.get('state_name', 'Others') or 'Others'
-        states[state] = states.get(state, 0) + 1
-    # Cities
-    cities = {}
-    for event in events:
-        city = event.get('city_name', 'Others') or 'Others'
-        cities[city] = cities.get(city, 0) + 1
-    # Price tiers
-    price_tiers = {'Others': 0, 'Moderate': 0, 'Premium': 0, 'Luxury': 0}
-    for event in events:
-        price_tier = get_price_tier_from_ticket_price(event.get('ticket_price', None))
-        if price_tier not in price_tiers:
-            price_tiers[price_tier] = 0
-        price_tiers[price_tier] += 1
-    return {
-        'categories': categories,
-        'states': states,
-        'cities': cities,
-        'price_tiers': price_tiers
-    }
+    try:
+        # Get category counts using aggregation
+        category_pipeline = [
+            {'$group': {'_id': '$event_type', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}}
+        ]
+        category_results = list(collection.aggregate(category_pipeline))
+        categories = {(result['_id'] if result['_id'] else 'Others'): result['count'] for result in category_results}
+        
+        # Get state counts
+        state_pipeline = [
+            {'$group': {'_id': '$state_name', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}}
+        ]
+        state_results = list(collection.aggregate(state_pipeline))
+        states = {(result['_id'] if result['_id'] else 'Others'): result['count'] for result in state_results}
+        
+        # Get city counts
+        city_pipeline = [
+            {'$group': {'_id': '$city_name', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}}
+        ]
+        city_results = list(collection.aggregate(city_pipeline))
+        cities = {(result['_id'] if result['_id'] else 'Others'): result['count'] for result in city_results}
+        
+        # Price tiers are derived in-place
+        events = get_events_data()
+        price_tiers = {'Others': 0, 'Moderate': 0, 'Premium': 0, 'Luxury': 0}
+        
+        for event in events:
+            price_tier = get_price_tier_from_ticket_price(event.get('ticket_price', None))
+            if price_tier not in price_tiers:
+                price_tiers[price_tier] = 0
+            price_tiers[price_tier] += 1
+        
+        return {
+            'categories': categories,
+            'states': states,
+            'cities': cities,
+            'price_tiers': price_tiers
+        }
+    except Exception as e:
+        print(f"Error retrieving filters: {e}")
+        return {
+            'categories': {'Others': 0},
+            'states': {'Others': 0},
+            'cities': {'Others': 0},
+            'price_tiers': {'Others': 0}
+        }
 
 @app.route('/')
 def home():
     events = get_events_data()
-    featured_events = events[:3]
+    featured_events = events[:3]  # Show first 3 events as featured
     stats = get_stats()
     return render_template('home.html', featured_events=featured_events, stats=stats)
 
@@ -171,36 +246,48 @@ def events():
     location = request.args.get('location', 'All Locations')
     search = request.args.get('search', '')
     page = int(request.args.get('page', 1))
-    per_page = 24
-
+    per_page = 24  # Show 24 events per page
+    
     filtered_events = get_events_data()
-
+    
+    # Filter by category (event_type)
     if category and category != 'All Categories':
         filtered_events = [e for e in filtered_events if e.get('event_type') == category or (not e.get('event_type') and category == 'Others')]
+    
+    # Filter by price range
     if price_range and price_range != 'All Prices':
         filtered_events = [e for e in filtered_events if get_price_tier_from_ticket_price(e.get('ticket_price')) == price_range]
+    
+    # Filter by location (state or city)
     if location and location != 'All Locations':
-        filtered_events = [e for e in filtered_events if
-                          e.get('state_name') == location or
-                          e.get('city_name') == location or
+        filtered_events = [e for e in filtered_events if 
+                          e.get('state_name') == location or 
+                          e.get('city_name') == location or 
                           (not e.get('state_name') and not e.get('city_name') and location == 'Others')]
+    
+    # Search filter
     if search:
-        filtered_events = [e for e in filtered_events if
-                          search.lower() in e.get('event_title', '').lower() or
+        filtered_events = [e for e in filtered_events if 
+                          search.lower() in e.get('event_title', '').lower() or 
                           search.lower() in e.get('city_name', '').lower() or
                           search.lower() in e.get('state_name', '').lower()]
-
+    
+    # Pagination
     total_events = len(filtered_events)
     start = (page - 1) * per_page
     end = start + per_page
     paginated_events = filtered_events[start:end]
+    
+    # Calculate pagination info
     total_pages = (total_events + per_page - 1) // per_page
     has_prev = page > 1
     has_next = page < total_pages
+    
+    # Get filter counts for display
     filter_counts = get_filter_counts()
-
-    return render_template('events.html',
-                         events=paginated_events,
+    
+    return render_template('events.html', 
+                         events=paginated_events, 
                          total_events=total_events,
                          current_page=page,
                          total_pages=total_pages,
@@ -217,7 +304,9 @@ def event_detail(event_id):
     event = get_event_by_id(event_id)
     if not event:
         return "Event not found", 404
+    
     itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
+    
     return render_template('event_detail.html', event=event, itinerary=itinerary)
 
 if __name__ == '__main__':
