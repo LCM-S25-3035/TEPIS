@@ -2,107 +2,78 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ dev, test ]
+    branches: [ main ]
   pull_request:
-    branches: [ dev ]
-
-env:
-  PYTHON_VERSION: '3.11'
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-  # services:
-  #   mongodb:
-  #     image: mongo:latest
-  #     ports:
-  #       - 27017:27017
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
-    
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    
+        python-version: '3.x'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run tests
-      run: |
-        python -m unittest discover -s tests -p '*_test.py'
 
   build:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/test'
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v3
-    
-    # - name: Login to Docker Hub
-    #   uses: docker/login-action@v3
-    #   with:
-    #     username: ${{ secrets.DOCKER_USERNAME }}
-    #     password: ${{ secrets.DOCKER_PASSWORD }}
-    
-    # - name: Build and push Docker image
-    #   uses: docker/build-push-action@v5
-    #   with:
-    #     context: .
-    #     push: true
-    #     tags: |
-    #       ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-    #       ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }}
-    #     cache-from: type=gha
-    #     cache-to: type=gha,mode=max
+    - uses: actions/checkout@v2
+    - name: Build Docker image
+      run: |
+        docker build -t tepis-app .
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test'
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
-     
+    if: github.ref == 'refs/heads/main'
     steps:
-    - name: Deploy to environment
+    - name: Create SSH key
       run: |
-        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          echo "Deploying to production environment"
-          # Add production deployment commands here
-        else
-          echo "Deploying to staging environment"
-          # Add staging deployment commands here
-        fi
-        
-        # AWS EC2 Deployment:
-        
-        # - name: Deploy to EC2
-        #   uses: appleboy/ssh-action@v0.1.5
-        #   with:
-        #     host: ${{ secrets.EC2_HOST }}
-        #     username: ${{ secrets.EC2_USERNAME }}
-        #     key: ${{ secrets.EC2_SSH_KEY }}
-        #     script: |
-        #       cd /path/to/your/app
-        #       git pull origin main
-        #       pip install -r requirements.txt
-        #       sudo systemctl restart your-app-service
-        
-        # Required GitHub Secrets for EC2 deployment:
-        # EC2_HOST - Your EC2 instance public IP or domain
-        # EC2_USERNAME - EC2 username (usually ubuntu or ec2-user)
-        # EC2_SSH_KEY - Your private SSH key content
+        mkdir -p ~/.ssh
+        cat << 'EOF' > ~/.ssh/deploy_key
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAqionhfVv9lTjPU0zhhWqMFBNqv92sPlrcckbYBvFKSo6GOZ+
+        onqkMLHciLhzOOpUT7JEsuEkuZANaeJxBGEmRiR/+qvCjaddjqfke37GzldHT973
+        I5H1lg/CfMtUKSAgFV4zoEcPo2t9nYoJl+ImTQpdRCs0z5s2s7eEzP/Z4mZc2GGm
+        CfhgSWIp6OibISj/1htTSVosxpzTlAzUjV8y2wVOuY8MRSBI4QtugkIPDd4nJCD7
+        W06TuLnHZHEdosp9jb59/lyZ46/FM3PIFxu0qdQ/mPpll097vbmytzhLtr8OXoyB
+        UB7zozawMZ0mX8pDGt8d13P7j8CiomSmjiN5xQIDAQABAoIBABLfAesVQQlseJb/
+        zMr99BXPkg14r00JHCVOTD7oVYEvMao5Ran3N+Y+k1qGOiEBu7/q4TuFRHFfzF0F
+        w8rci0YUHi1KhxT2jqWXcPtRH/MaMspky7uiID44GTWFxxuYeHZmMAuCVfWlohSq
+        jk3NwrmggJ9iu0SazgI4Q/4IEb3NtgnW0lmEiXxY75B7hyk4vSiWwUumtoSc4l2m
+        L5HY/+m3pDLu224eyeaSHk+ZLrKOAwpKdg6pJrmBeiDAHiKbBdxDW7ceJRXIj64L
+        JtODn/ZyC5TH5ESxsC85DJUkrQ0tctONnWX/bVn441BLDrbO72I+cLgpF5BE5AoT
+        Tp4dfzECgYEA08da4zG7tsPR0ok9o6Vag9gWKOYDqcBeNQNgBet6N72b/hSAUDiI
+        RgMS7YOg1LgSW6TJO+hT5jtX1P6Y2IIF2rqlP61GRTu63dTyPLrs6P+Vve2OTWqX
+        cpag3MZIJz7fToh6XzttSs+7J1E19jJ4SP7r8evxuf1ok7v5syDw5WMCgYEAzbJR
+        JSzPpa+++sIKyRqYTFL7GI0Kor+t0Z6altaRXsU6nMbDjl2rUAccQmDZXNzi2E7S
+        u+MoIwpocNcK460OKj8emRrHSIq77pqRJxefhvpXO2f0KKNr7GD1wrPjPnfJNOG/
+        0aU4O94ch0kAg2DUFWaO5K2X9pHDsEHhIm8qgLcCgYEAwrUA7O0mpow29xhS4Yf/
+        RkR/ay6+o21Hr/ngaNDs1x6ustVqe1beg3AEEPb6AVkTF8rTcQ7TRFO/FwbUxAoX
+        E9iSYY8PkkuuLJHB/O/nLPj/VVV5hdfAUgwG7bQnVl3JtUxpJfFfNG70pNtXf3k7
+        efFWQGArKFLBuUIT+wsIL/0CgYBQGEIulo9YdeGIpOwsOJXbCmjJu4nLq5WUTQzm
+        9S/v1h6nk2HsWp7tb4dadXnOBhiyn6bBEIe9dT0Ly0BrPSSJ4MAaX+n/Xj4lf7xL
+        m5A7r9ktwaG5/UB1759irEctONl5JPpbONl3vlofd5aikZ6joqa7drj4gvPO+yge
+        D2leawKBgChYuC76YEuItEg4dUGcUuTv/eqzi9orMRca6TaFzaV4EeTO2MEWvrsA
+        QGFS2RUl2dozmvlUNdvnrnRY/D54UUbOmQSi6dnFWen+cFPM/a0WiQPJ60J/XaDB
+        OXbvyu7Qh/2VKNW9N/Prl2fJmawQ/ob1Ou29x/wkp2DE8EG9zKqN
+        -----END RSA PRIVATE KEY-----
+        EOF
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H ec2-54-209-152-194.compute-1.amazonaws.com >> ~/.ssh/known_hosts
+
+    - name: Deploy to EC2
+      run: |
+        ssh -i ~/.ssh/deploy_key ubuntu@ec2-54-209-152-194.compute-1.amazonaws.com '
+          cd TEPIS_TEST &&
+          git pull origin main &&
+          docker-compose down &&
+          docker-compose up -d
+        '

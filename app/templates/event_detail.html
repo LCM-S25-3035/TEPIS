@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ event.event_title }} - TEPIS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <div class="logo-icon">📅</div>
+                <span>TEPIS</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('events') }}">Events</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Event Hero Section -->
+        <section class="event-hero">
+            <div class="breadcrumb">
+                <a href="{{ url_for('events') }}">← Back to Events</a>
+            </div>
+            
+            <div class="event-badges" style="margin-bottom: 1rem;">
+                <span class="badge {{ event.category }}">{{ event.category }}</span>
+                <span class="badge {{ event.price_tier }}">{{ event.price_tier }}</span>
+                <span class="badge">{{ event.duration }}</span>
+            </div>
+            
+            <h1>{{ event.event_title }}</h1>
+            
+            <div class="event-meta">
+                <span>📍 {{ event.city_name }}, {{ event.country_name }}</span>
+                <span>📅 {{ event.start_date }}</span>
+            </div>
+            
+            <div class="event-description">
+                <p>{{ event.summary }}</p>
+            </div>
+        </section>
+
+        <!-- Event Detail Content -->
+        <div class="event-detail-content">
+            <!-- Itinerary Section -->
+            <div class="itinerary-section">
+                <h2>Your Day-by-Day Adventure</h2>
+                
+                {% if itinerary.itinerary %}
+                    {% for day in itinerary.itinerary %}
+                    <div class="day-card">
+                        <div class="day-header">
+                            <h3 class="day-title">Day {{ day.day }}</h3>
+                            <span class="day-number">{{ day.day }}</span>
+                        </div>
+                        
+                        <div class="day-location" style="margin-bottom: 1rem; font-weight: 600; color: #8B5CF6;">
+                            📍 {{ day.location }}
+                        </div>
+                        
+                        <div class="activity-timeline">
+                            {% for activity in day.activities %}
+                            <div class="activity">
+                                <div class="activity-time">{{ activity.time }}</div>
+                                <div class="activity-description">{{ activity.description }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="day-card">
+                        <h3 style="color: #64748b; text-align: center; padding: 2rem;">
+                            Detailed itinerary will be available soon!
+                        </h3>
+                        <p style="text-align: center; color: #94a3b8;">
+                            Our team is crafting the perfect adventure for this event.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Trip Highlights -->
+                <div class="sidebar-card">
+                    <h3>✨ Trip Highlights</h3>
+                    {% if itinerary.highlights %}
+                        <ul class="highlights-list">
+                            {% for highlight in itinerary.highlights %}
+                            <li>{{ highlight }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <ul class="highlights-list">
+                            <li>Exclusive {{ event.event_title }} experience</li>
+                            <li>Professional local guides</li>
+                            <li>Curated cultural experiences</li>
+                            <li>Premium accommodations</li>
+                            <li>24/7 support throughout your trip</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Trip Information -->
+                <div class="sidebar-card">
+                    <h3>📋 Trip Information</h3>
+                    <div class="trip-info">
+                        <div class="info-item">
+                            <span class="info-label">Duration</span>
+                            <span class="info-value">{{ event.duration }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Category</span>
+                            <span class="info-value">{{ event.category|title }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Price Range</span>
+                            <span class="info-value">{{ event.price_tier|title }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Start Date</span>
+                            <span class="info-value">{{ event.start_date }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">End Date</span>
+                            <span class="info-value">{{ event.end_date }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location</span>
+                            <span class="info-value">{{ event.city_name }}, {{ event.country_name }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Section -->
+                <div class="sidebar-card booking-card">
+                    <h3>🎯 Ready for Adventure?</h3>
+                    <p>This carefully crafted itinerary is your gateway to an unforgettable experience.</p>
+                    <div style="margin-bottom: 1rem;">
+                        <strong style="font-size: 1.2rem;">{{ event.ticket_price }}</strong>
+                    </div>
+                    <a href="{{ event.booking_url }}" class="btn-book" target="_blank">Book This Trip</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TEPIS</h3>
+                <p>Discover extraordinary events around the world and let us craft the perfect trip around your passion.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('events') }}">All Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="#contact">📍 Global Adventures</a></li>
+                    <li><a href="mailto:hello@tepis.com">hello@tepis.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 TEPIS. Crafted with passion for extraordinary experiences.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
