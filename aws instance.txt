@@ -1,0 +1,47 @@
+1 - go to aws , signup
+2 - search ec2 , and create a instance , remember the "key-pair"
+3 - go to connect and then ssh client 
+4 - open terminal(cmd, powershell) and enter the command 
+[ssh -i "cicd pipeline.pem" ubuntu@ec2-52-87-163-88.compute-1.amazonaws.com]- ip might be diff
+(make sure to be in same folder as the key-pair or the pem file)
+
+5 - 	sudo apt-get update
+	sudo apt-get upgrade -y
+
+6 - create an flask app 
+7 - create Dockerfile 
+8 - docker build -t cicd-pipeline .
+9 - docker images
+10 - docker run -p 5000:5000 cicd-pipeline
+11 - docker ps
+
+(at this point upload all the files to github)
+
+12 go back to aws ec2 ssh terminal :
+Set up Docker's apt repository.
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+13 - Install the Docker packages.
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+14 - verify
+sudo docker run hello-world
+
+15 - git clone the flask app
+
+16 - sudo docker build -t cicd-pipeline .
+
+17 - sudo docker run -d -p 80:5000 cicd-pipeline
