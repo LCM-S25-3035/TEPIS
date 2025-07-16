@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: TEPIS
+Version: 0.0.1
+Author: lambton
+Author-email: 
+Requires-Dist: langchain
+Requires-Dist: numpy
+Dynamic: author
+Dynamic: requires-dist
