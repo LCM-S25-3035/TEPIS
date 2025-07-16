@@ -377,5 +377,14 @@ def event_detail(event_id):
     # Regular event detail view
     itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
     return render_template('event_detail.html', event=event, itinerary=itinerary)
+
+@app.route('/trip-planner/<event_id>')
+def trip_planner(event_id):
+    event = get_event_by_id(event_id)
+    if not event:
+        return "Event not found", 404
+    
+    return render_template('trip_planner.html', event=event)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
