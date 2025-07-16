@@ -1,9 +1,36 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import json
 from pymongo import MongoClient
 from bson import ObjectId
 import re
+import sys
+import os
+
+# Add agents directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'agents'))
+
+# Lazy import function for coordinator
+def get_coordinator():
+    """Lazy import coordinator to avoid startup delay"""
+    try:
+        from agents.coordinator import ItineraryCoordinator
+        return ItineraryCoordinator
+    except ImportError as e:
+        print(f"ImportError: {e}")
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Python path: {sys.path}")
+        print(f"Files in current directory: {os.listdir('.')}")
+        if os.path.exists('agents'):
+            print(f"Files in agents directory: {os.listdir('agents')}")
+        else:
+            print("agents directory does not exist")
+        return None
+    except Exception as e:
+        print(f"Unexpected error importing coordinator: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
 
 app = Flask(__name__)
 
@@ -305,9 +332,50 @@ def event_detail(event_id):
     if not event:
         return "Event not found", 404
     
-    itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
+    # Check if this is a trip planner request
+    duration = request.args.get('duration')
+    cost = request.args.get('cost')
     
+    if duration and cost:
+        # Generate comprehensive trip data using coordinator
+        try:
+            event_data = {
+                'city_name': event.get('city_name', 'Unknown'),
+                'duration': duration,
+                'cost': cost
+            }
+            
+            print(f"Generating trip data for {event_data['city_name']} - {duration} - {cost}")
+            
+            # Get coordinator class using lazy import
+            ItineraryCoordinator = get_coordinator()
+            if not ItineraryCoordinator:
+                raise Exception("Unable to import coordinator")
+            
+            coordinator = ItineraryCoordinator(event_data)
+            trip_data = coordinator.generate_itinerary()
+            
+            # Add trip preferences to the data
+            trip_data['trip_preferences'] = {
+                'duration': duration,
+                'cost': cost
+            }
+            
+            print(f"Trip data generated successfully for {event_data['city_name']}")
+            
+            return render_template('event_detail.html', event=event, trip_data=trip_data, show_trip_plan=True)
+        except Exception as e:
+            # Add detailed logging
+            print("Error generating trip data:")
+            import traceback
+            traceback.print_exc()
+            
+            # Fall back to basic event display with error message
+            itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
+            return render_template('event_detail.html', event=event, itinerary=itinerary, show_trip_plan=False, error=f"Error generating trip plan: {str(e)}")
+    
+    # Regular event detail view
+    itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
     return render_template('event_detail.html', event=event, itinerary=itinerary)
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
