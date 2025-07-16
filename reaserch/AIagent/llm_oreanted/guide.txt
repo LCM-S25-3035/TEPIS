@@ -1,8 +1,0 @@
-What it is & Why
-You feed all the structured data (event details, user specs) plus any lookup results (hotels, transport options) into a single prompt, and let the LLM generate the full itinerary in one go. This is the simplest from an orchestration standpoint: one prompt → one answer.
-
-How to Build
-
-ask the user for all imput all at once  - one input
-iterate internally for response_data that is passed to other llm till final results
-one output 
