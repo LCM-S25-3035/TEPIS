@@ -85,7 +85,7 @@
         <section class="section" style="padding-top: 1rem;">
             <div class="events-grid">
                 {% for event in events %}
-                <div class="event-card" onclick="window.location.href='{{ url_for('event_detail', event_id=event._id) }}'">
+                <div class="event-card">
                     <div class="event-image" style="background-image: url('{{ event.image_url or '/static/images/default-event.jpg' }}'); background-size: cover; background-position: center; position: relative;">
                         <div class="event-badges">
                             <span class="badge">{{ event.event_type or 'Others' }}</span>
@@ -104,6 +104,10 @@
                             <span>⏰ {{ event.start_time or 'TBD' }}</span>
                         </div>
                         <div class="event-price">{{ event.ticket_price or 'TBD' }}</div>
+                        <div class="event-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('event_detail', event_id=event._id) }}" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.5rem; text-decoration: none; border-radius: 4px;">View Details</a>
+                            <a href="{{ url_for('trip_planner', event_id=event._id) }}" class="btn btn-primary" style="flex: 1; text-align: center; padding: 0.5rem; text-decoration: none; border-radius: 4px;">Plan Trip</a>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
