@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner - {{ event.event_title }} | TEPIS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <div class="logo-icon">📅</div>
+                <span>TEPIS</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <section class="section">
+            <div class="breadcrumb">
+                <a href="{{ url_for('events') }}">← Back to Events</a>
+            </div>
+            
+            <h2>Plan Your Trip for {{ event.event_title }}</h2>
+            <p class="section-subtitle">Customize your adventure by selecting your preferences</p>
+
+            <form method="GET" action="{{ url_for('event_detail', event_id=event._id) }}" id="trip-form">
+                <div class="filter-group">
+                    <label for="duration">Duration</label>
+                    <select id="duration" name="duration" required>
+                        <option value="3 days" selected>3 days</option>
+                        <option value="5 days">5 days</option>
+                        <option value="7 days">7 days</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="cost">Cost</label>
+                    <select id="cost" name="cost" required>
+                        <option value="budget">Budget</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="in-between" selected>In-between</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="generate-btn">
+                    <span id="btn-text">Generate Itinerary</span>
+                    <span id="loading-spinner" style="display: none;">🔄 Generating...</span>
+                </button>
+            </form>
+            
+            <div id="loading-message" style="display: none; text-align: center; margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="color: #8B5CF6;">🚀 Creating Your Perfect Trip...</h3>
+                <p>Our AI agents are working hard to find the best hotels, restaurants, and activities for you!</p>
+                <p style="color: #64748b;">This may take 30-60 seconds for the first request.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TEPIS</h3>
+                <p>Discover extraordinary events and let us craft the perfect trip around your passion.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 TEPIS. Crafted with passion for extraordinary experiences.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.getElementById('trip-form').addEventListener('submit', function(e) {
+            const btnText = document.getElementById('btn-text');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const generateBtn = document.getElementById('generate-btn');
+            const loadingMessage = document.getElementById('loading-message');
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            loadingSpinner.style.display = 'inline';
+            generateBtn.disabled = true;
+            loadingMessage.style.display = 'block';
+            
+            // Scroll to loading message
+            loadingMessage.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

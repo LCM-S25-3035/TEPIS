@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEPIS - Turn Events Into Epic Adventures</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <div class="logo-icon">📅</div>
+                <span>TEPIS</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="active">Home</a></li>
+                <li><a href="{{ url_for('events') }}">Events</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Turn Events Into<br><span style="color: #A855F7;">Epic Adventures</span></h1>
+                <p>Discover world-class events and let us create the perfect trip around your passion. From music festivals to sporting events, your adventure starts here.</p>
+                
+                <div class="hero-actions">
+                    <a href="{{ url_for('events') }}" class="btn btn-primary">🔍 Explore Events</a>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search events, locations, or keywords...">
+                        <button type="submit">Search</button>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat">
+                        <h3>{{ stats.total_events }}+</h3>
+                        <p>Global Events</p>
+                    </div>
+                    <div class="stat">
+                        <h3>{{ stats.countries }}+</h3>
+                        <p>Countries</p>
+                    </div>
+                    <div class="stat">
+                        <h3>{{ "{:,}".format(stats.happy_travelers) }}+</h3>
+                        <p>Happy Travelers</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Events Section -->
+        <section class="section">
+            <h2>Featured Adventures</h2>
+            <p class="section-subtitle">Handpicked extraordinary events that promise unforgettable experiences</p>
+            
+            <div class="events-grid">
+                {% for event in featured_events %}
+                <div class="event-card" onclick="window.location.href='{{ url_for('event_detail', event_id=event._id) }}'">
+                    <div class="event-image">
+                        <div class="event-badges">
+                            <span class="badge {{ event.category }}">{{ event.category }}</span>
+                            <span class="badge featured">Featured</span>
+                        </div>
+                        {{ event.event_title[:20] }}...
+                    </div>
+                    <div class="event-content">
+                        <h3 class="event-title">{{ event.event_title }}</h3>
+                        <div class="event-location">
+                            📍 {{ event.city_name }}, {{ event.country_name }}
+                        </div>
+                        <div class="event-details">
+                            <span>📅 {{ event.start_date }}</span>
+                            <span>⏰ {{ event.duration }}</span>
+                        </div>
+                        <div class="event-price">{{ event.ticket_price }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{{ url_for('events') }}" class="btn btn-primary">View All Events →</a>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="section how-it-works">
+            <h2>How It Works</h2>
+            <p class="section-subtitle">Your journey from inspiration to adventure in four simple steps</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Discover Events</h3>
+                    <p>Browse our curated collection of world-class events across different categories and locations.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Choose Your Adventure</h3>
+                    <p>Select an event that sparks your interest and fits your schedule and preferences.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Custom Itinerary</h3>
+                    <p>Get a detailed day-by-day itinerary crafted around your chosen event and destination.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Travel & Enjoy</h3>
+                    <p>Pack your bags and embark on an unforgettable journey with our carefully planned experience.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TEPIS</h3>
+                <p>Discover extraordinary events around the world and let us craft the perfect trip around your passion.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('events') }}">All Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="#contact">📍 Global Adventures</a></li>
+                    <li><a href="mailto:hello@tepis.com">hello@tepis.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 TEPIS. Crafted with passion for extraordinary experiences.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
