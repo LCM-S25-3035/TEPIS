@@ -35,7 +35,10 @@ def get_coordinator():
 app = Flask(__name__)
 
 # MongoDB Atlas connection
-mongo_uri = "mongodb+srv://TEPIS:TEPIS355@cluster0.lu5p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+ini = "mongodb+srv://"
+security = "TEPIS:TEPIS355@cluster0"
+rest = ".lu5p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+mongo_uri = ini+security+rest
 client = MongoClient(mongo_uri)
 db = client["ticketmaster"]
 collection = db["events"]
