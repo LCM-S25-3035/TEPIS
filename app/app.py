@@ -200,7 +200,7 @@ itinerary_data = {
 def get_stats():
     events = get_events_data()
     total_events = len(events)
-    unique_countries = len(set(event.get('country_name', 'Unknown') for event in events if event.get('country_name')))
+    unique_countries = len({event.get('country_name', 'Unknown') for event in events if event.get('country_name')})
     # Calculate estimated happy travelers (based on events)
     happy_travelers = min(total_events * 125, 10000)  # Cap at 10k
     
