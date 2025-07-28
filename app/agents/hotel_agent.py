@@ -11,6 +11,10 @@ from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
 class HotelAgent:
+    # Constants for commonly used values
+    FREE_WIFI = "Free WiFi"
+    BOOKING_URL = "https://booking.com"
+    
     def __init__(self, api_token=None):
         # Set API token from parameter or use fallback for testing
         if api_token:
@@ -92,8 +96,8 @@ Only return valid JSON, no additional text.
                     "rating": 4.5,
                     "price_category": "Luxury",
                     "location": f"Downtown {destination}",
-                    "amenities": ["Free WiFi", "Spa", "Gym", "Business Center"],
-                    "booking_url": "https://booking.com"
+                    "amenities": [self.FREE_WIFI, "Spa", "Gym", "Business Center"],
+                    "booking_url": self.BOOKING_URL
                 },
                 {
                     "name": f"Business Inn {destination}",
@@ -101,8 +105,8 @@ Only return valid JSON, no additional text.
                     "rating": 4.0,
                     "price_category": "Business",
                     "location": f"Business District {destination}",
-                    "amenities": ["Free WiFi", "Meeting Rooms", "Gym"],
-                    "booking_url": "https://booking.com"
+                    "amenities": [self.FREE_WIFI, "Meeting Rooms", "Gym"],
+                    "booking_url": self.BOOKING_URL
                 },
                 {
                     "name": f"Comfort Stay {destination}",
@@ -110,8 +114,8 @@ Only return valid JSON, no additional text.
                     "rating": 3.8,
                     "price_category": "Moderate",
                     "location": f"Central {destination}",
-                    "amenities": ["Free WiFi", "Breakfast", "Parking"],
-                    "booking_url": "https://booking.com"
+                    "amenities": [self.FREE_WIFI, "Breakfast", "Parking"],
+                    "booking_url": self.BOOKING_URL
                 }
             ]
         }
