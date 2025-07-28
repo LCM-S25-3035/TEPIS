@@ -70,7 +70,7 @@
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label>&nbsp;</label>
+                            <div style="height: 1.5em;"></div>
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
                         </div>
                     </div>
@@ -85,7 +85,13 @@
         <section class="section" style="padding-top: 1rem;">
             <div class="events-grid">
                 {% for event in events %}
-                <div class="event-card">
+                <div class="event-card" 
+                     onclick="window.location.href='{{ url_for('event_detail', event_id=event._id) }}'"
+                     onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ url_for('event_detail', event_id=event._id) }}'; }"
+                     tabindex="0"
+                     role="button"
+                     aria-label="View details for {{ event.event_title }}"
+                     style="cursor: pointer;">
                     <div class="event-image" style="background-image: url('{{ event.image_url or '/static/images/default-event.jpg' }}'); background-size: cover; background-position: center; position: relative;">
                         <div class="event-badges">
                             <span class="badge">{{ event.event_type or 'Others' }}</span>
