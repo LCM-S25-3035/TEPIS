@@ -26,8 +26,8 @@ else:
     from .transportation_agent import TransportationAgent
 
 def get_secret():
-    a = "hf_ViMyUmPDLwkitl"
-    b = "EqORbumFslDEHttoCcdP"
+    a = "hf_nmHuqexKHOqdQQg"
+    b = "VpHpeVGhlurOWCEWoZu"
     return a+b
 class ItineraryCoordinator:
     def __init__(self, event_data):
