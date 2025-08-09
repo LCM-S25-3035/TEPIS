@@ -367,7 +367,13 @@ def event_detail(event_id):
             event_data = {
                 'city_name': event.get('city_name', 'Unknown'),
                 'duration': duration,
-                'cost': cost
+                'cost': cost,
+                # Add full event details for itinerary planning
+                'event_title': event.get('event_title', 'Event'),
+                'event_date': event.get('start_date', ''),
+                'event_venue': event.get('venue_name', ''),
+                'event_description': event.get('summary', ''),
+                'event_time': event.get('event_time', 'Evening')
             }
 
             print(f"Generating trip data for {event_data['city_name']} - {duration} - {cost}")

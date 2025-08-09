@@ -194,6 +194,35 @@ A comprehensive travel planning system that uses multiple AI agents to coordinat
   - Shows duration, distance, and estimated costs for each mode
   - Responsive design maintains existing UI consistency
 
+### August 9, 2025 - Pre Bug Fix: Event Missing from Generated Itinerary
+- Critical bug identified: The actual selected event is not included in the generated itinerary
+- Issue: Itinerary Agent generates generic tourist activities but doesn't incorporate the specific event the user selected
+- Example: "Breaking Sound @ Peppermint Club" concert on July 17th should be prominently featured in the itinerary but is completely missing
+- Plan: Update coordinator and itinerary agent to pass event details and ensure the actual event is scheduled in the itinerary
+- This is a core functionality issue that breaks the main purpose of the app
+
+### August 9, 2025 - Critical Bug Fix Complete: Event Now Included in Generated Itinerary
+- **Root Cause**: Event details were never passed through the agent chain (Backend → Coordinator → Itinerary Agent)
+- **Solution Implemented**:
+  - **Backend (`app.py`)**: Now passes complete event details (title, date, venue, description) to coordinator
+  - **Coordinator (`coordinator.py`)**: Stores event details and passes them to itinerary agent
+  - **Itinerary Agent (`itinerary_agent.py`)**: Updated to accept event details and center itinerary around the actual event
+
+- **Key Changes**:
+  - Updated prompt template to be event-centered rather than generic tourism
+  - Event is scheduled on appropriate day (middle day for multi-day trips)
+  - Fallback data now includes the actual event when provided
+  - Event title is featured in highlights
+  - Itinerary category changed from "tourism" to "event-centered"
+
+- **Technical Details**:
+  - Event details passed through full chain: `app.py` → `coordinator.py` → `itinerary_agent.py`
+  - AI prompt now instructs to build itinerary around the specific event
+  - Fallback system ensures event is included even when AI fails
+  - Maintains backward compatibility with existing non-event itineraries
+
+- **Result**: Now "Breaking Sound @ Peppermint Club" and similar events will be prominently featured in generated itineraries
+
 ### [DATE] - [DESCRIPTION OF CHANGES]
 *Future changes should be logged here with date and description*
 
