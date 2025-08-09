@@ -359,6 +359,7 @@ def event_detail(event_id):
     # Check if this is a trip planner request
     duration = request.args.get('duration')
     cost = request.args.get('cost')
+    user_address = request.args.get('user_address')
 
     if duration and cost:
         # Generate comprehensive trip data using coordinator
@@ -384,10 +385,33 @@ def event_detail(event_id):
                 'duration': duration,
                 'cost': cost
             }
+            
+            # Calculate home-to-destination routes if user address provided
+            home_routes = None
+            if user_address and user_address.strip():
+                try:
+                    print(f"Calculating routes from {user_address} to {event.get('city_name', 'Unknown')}")
+                    
+                    # Import and use transportation agent
+                    from agents.transportation_agent import TransportationAgent
+                    transport_agent = TransportationAgent()
+                    
+                    # Create destination address from event data
+                    destination_address = f"{event.get('city_name', '')}, {event.get('state_name', '')}, {event.get('country_name', '')}".strip(', ')
+                    
+                    home_routes = transport_agent.get_home_to_destination_routes(user_address, destination_address)
+                    print(f"Routes calculated successfully from {user_address}")
+                    
+                except Exception as route_error:
+                    print(f"Error calculating home routes: {route_error}")
+                    home_routes = None
+            
+            # Add home routes to trip data
+            trip_data['home_routes'] = home_routes
 
             print(f"Trip data generated successfully for {event_data['city_name']}")
 
-            return render_template('event_detail.html', event=event, trip_data=trip_data, show_trip_plan=True)
+            return render_template('event_detail.html', event=event, trip_data=trip_data, show_trip_plan=True, home_routes=home_routes)
         except Exception as e:
             # Add detailed logging
             print("Error generating trip data:")
