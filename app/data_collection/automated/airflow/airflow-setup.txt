@@ -1,0 +1,7 @@
+install airflow (cmd)= winget install -e --id Astronomer.Astro
+astro dev init
+create file in dag
+write dag function 
+create docker-compose
+astro dev start(docker open)
+admin - connection
