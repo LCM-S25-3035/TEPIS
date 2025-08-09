@@ -283,6 +283,73 @@
                     </div>
                 </div>
 
+                <!-- Home Transportation Section -->
+                {% if show_trip_plan and trip_data and trip_data.home_routes %}
+                <div class="sidebar-card">
+                    <h3>🚗 Transportation from Home</h3>
+                    <div class="transport-from-home">
+                        <div class="route-summary" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                            <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+                                <strong>From:</strong> {{ trip_data.home_routes.user_address }}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #64748b;">
+                                <strong>To:</strong> {{ trip_data.home_routes.destination }}
+                            </div>
+                            {% if trip_data.home_routes.distance_km > 0 %}
+                            <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">
+                                <strong>Total Distance:</strong> {{ "%.0f"|format(trip_data.home_routes.distance_km) }} km
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% for route in trip_data.home_routes.routes %}
+                        <div class="route-option" style="border-left: 3px solid #8B5CF6; padding-left: 1rem; margin-bottom: 1.5rem; background: #fefeff; padding: 1rem; border-radius: 6px; border: 1px solid #e5e7eb;">
+                            <div class="route-header" style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-size: 1.2rem; margin-right: 0.5rem;">{{ route.icon }}</span>
+                                <h4 style="margin: 0; color: #1f2937;">{{ route.name }}</h4>
+                            </div>
+                            
+                            <div class="route-details" style="margin-bottom: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.85rem; color: #64748b;">Duration:</span>
+                                    <span style="font-size: 0.85rem; font-weight: 600;">{{ route.duration }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.85rem; color: #64748b;">Distance:</span>
+                                    <span style="font-size: 0.85rem; font-weight: 600;">{{ route.distance }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 0.85rem; color: #64748b;">Cost:</span>
+                                    <span style="font-size: 0.85rem; font-weight: 600; color: #059669;">{{ route.cost_estimate }}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">{{ route.description }}</div>
+                            
+                            {% if route.steps %}
+                            <div class="route-steps">
+                                <div style="font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Key Steps:</div>
+                                {% for step in route.steps %}
+                                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.25rem; padding-left: 1rem; position: relative;">
+                                    <span style="position: absolute; left: 0; top: 0;">•</span>
+                                    {{ step }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        
+                        {% if trip_data.home_routes.flight_required %}
+                        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 1rem; margin-top: 1rem;">
+                            <div style="font-size: 0.85rem; color: #92400e; font-weight: 600; margin-bottom: 0.5rem;">✈️ Long Distance Travel</div>
+                            <div style="font-size: 0.8rem; color: #92400e;">Due to the distance ({{ "%.0f"|format(trip_data.home_routes.distance_km) }}+ km), flying is recommended for this trip.</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
                 <!-- Booking Section -->
                 <div class="sidebar-card booking-card">
                     <h3>🎯 Ready for Adventure?</h3>

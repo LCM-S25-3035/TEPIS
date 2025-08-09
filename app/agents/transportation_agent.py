@@ -97,9 +97,7 @@ Only return valid JSON, no additional text.
         self.chain = self.prompt_template | self.llm
         
         # Google Maps API key - hardcoded as requested
-        a = "AIzaSyDriqtz6KB-2pSbC"
-        b = "Q0zFNmwi5ZrhGZeDqM"
-        self.google_maps_api_key = a + b
+        self.google_maps_api_key = "AIzaSyDriqtz6KB-2pSbCQ0zFNmwi5ZrhGZeDqM"
 
     def _get_cache_key(self, destination):
         """Generate cache key for destination"""
