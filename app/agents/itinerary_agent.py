@@ -106,7 +106,7 @@ Only return valid JSON, no additional text.
         """Fallback data if AI fails"""
         try:
             num_days = int(days)
-        except (ValueError, TypeError):
+        except:
             num_days = 1
         
         fallback_activities = []

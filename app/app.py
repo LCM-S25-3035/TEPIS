@@ -35,10 +35,7 @@ def get_coordinator():
 app = Flask(__name__)
 
 # MongoDB Atlas connection
-ini = "mongodb+srv://"
-security = "TEPIS:TEPIS355@cluster0"
-rest = ".lu5p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-mongo_uri = ini+security+rest
+mongo_uri = "mongodb+srv://TEPIS:TEPIS355@cluster0.lu5p4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(mongo_uri)
 db = client["ticketmaster"]
 collection = db["events"]
@@ -200,7 +197,7 @@ itinerary_data = {
 def get_stats():
     events = get_events_data()
     total_events = len(events)
-    unique_countries = len({event.get('country_name', 'Unknown') for event in events if event.get('country_name')})
+    unique_countries = len(set(event.get('country_name', 'Unknown') for event in events if event.get('country_name')))
     # Calculate estimated happy travelers (based on events)
     happy_travelers = min(total_events * 125, 10000)  # Cap at 10k
     
