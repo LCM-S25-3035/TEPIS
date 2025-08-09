@@ -331,11 +331,35 @@ def event_detail(event_id):
     event = get_event_by_id(event_id)
     if not event:
         return "Event not found", 404
-    
+
+    # --- Ensure Trip Info Fields Are Populated for Template ---
+    # Duration
+    if not event.get('duration'):
+        if event.get('start_date') and event.get('end_date') and event['end_date'] != 'None' and event['end_date'] is not None:
+            try:
+                from datetime import datetime
+                start = datetime.strptime(event['start_date'], '%Y-%m-%d')
+                end = datetime.strptime(event['end_date'], '%Y-%m-%d')
+                delta = (end - start).days + 1
+                event['duration'] = f"{delta} days" if delta > 0 else "1 day"
+            except Exception:
+                event['duration'] = "-"
+        else:
+            event['duration'] = "-"
+    # Category
+    if not event.get('category'):
+        category = event.get('event_type') or event.get('type')
+        event['category'] = category if category else "-"
+    # Price tier
+    if not event.get('price_tier'):
+        event['price_tier'] = get_price_tier_from_ticket_price(event.get('ticket_price'))
+
+    # --- End Ensure Trip Info Fields Are Populated ---
+
     # Check if this is a trip planner request
     duration = request.args.get('duration')
     cost = request.args.get('cost')
-    
+
     if duration and cost:
         # Generate comprehensive trip data using coordinator
         try:
@@ -344,32 +368,32 @@ def event_detail(event_id):
                 'duration': duration,
                 'cost': cost
             }
-            
+
             print(f"Generating trip data for {event_data['city_name']} - {duration} - {cost}")
-            
+
             # Get coordinator class using lazy import
             ItineraryCoordinator = get_coordinator()
             if not ItineraryCoordinator:
                 raise Exception("Unable to import coordinator")
-            
+
             coordinator = ItineraryCoordinator(event_data)
             trip_data = coordinator.generate_itinerary()
-            
+
             # Add trip preferences to the data
             trip_data['trip_preferences'] = {
                 'duration': duration,
                 'cost': cost
             }
-            
+
             print(f"Trip data generated successfully for {event_data['city_name']}")
-            
+
             return render_template('event_detail.html', event=event, trip_data=trip_data, show_trip_plan=True)
         except Exception as e:
             # Add detailed logging
             print("Error generating trip data:")
             import traceback
             traceback.print_exc()
-            
+
             # Fall back to basic event display with error message
             itinerary = itinerary_data.get(event_id, {"itinerary": [], "highlights": [], "trip_info": {}})
             return render_template('event_detail.html', event=event, itinerary=itinerary, show_trip_plan=False, error=f"Error generating trip plan: {str(e)}")
