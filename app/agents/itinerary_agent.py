@@ -27,9 +27,22 @@ class ItineraryAgent:
         # Cache for responses
         self.cache = {}
         
-        # Prompt template
+        # Prompt template for event-centered itinerary
         self.prompt_template = PromptTemplate.from_template("""
-Create a {days}-day itinerary for {destination} focusing on popular attractions and activities.
+Create a {days}-day itinerary for {destination} centered around the main event: "{event_title}". 
+
+Event Details:
+- Event: {event_title}
+- Date: {event_date}
+- Venue: {event_venue}
+- Description: {event_description}
+
+The itinerary should:
+1. Include the actual event on the appropriate day (preferably day {main_event_day})
+2. Plan complementary activities around the event
+3. Consider pre-event and post-event activities
+4. Include sightseeing and local attractions on other days
+
 Return ONLY JSON in this exact format:
 
 {{
@@ -50,13 +63,13 @@ Return ONLY JSON in this exact format:
     }}
   ],
   "highlights": [
+    "{event_title}",
     "Top attraction 1",
-    "Top attraction 2",
-    "Top attraction 3"
+    "Top attraction 2"
   ],
   "trip_info": {{
     "duration": "{days} days",
-    "category": "tourism",
+    "category": "event-centered",
     "price_range": "Moderate"
   }}
 }}
@@ -102,7 +115,7 @@ Only return valid JSON, no additional text.
         
         return True
 
-    def _get_fallback_data(self, destination, days):
+    def _get_fallback_data(self, destination, days, event_details=None):
         """Fallback data if AI fails"""
         try:
             num_days = int(days)
@@ -111,52 +124,85 @@ Only return valid JSON, no additional text.
         
         fallback_activities = []
         
+        # Determine event day (middle day for multi-day trips)
+        if event_details and num_days > 1:
+            event_day = min(2, (num_days + 1) // 2)
+        else:
+            event_day = 1
+        
         for day in range(1, num_days + 1):
+            # Regular activities for most days
+            activities = [
+                {
+                    "time": "9:00 AM",
+                    "description": f"Start day {day} with breakfast at a local café"
+                },
+                {
+                    "time": "10:30 AM",
+                    "description": f"Explore the main attractions of {destination}"
+                },
+                {
+                    "time": "1:00 PM",
+                    "description": "Lunch at a recommended restaurant"
+                },
+                {
+                    "time": "3:00 PM",
+                    "description": f"Visit cultural sites and museums in {destination}"
+                },
+                {
+                    "time": "6:00 PM",
+                    "description": "Dinner and evening activities"
+                }
+            ]
+            
+            # Add the actual event on the designated day
+            if event_details and day == event_day:
+                event_title = event_details.get('title', 'Special Event')
+                event_venue = event_details.get('venue', 'Local Venue')
+                event_time = event_details.get('time', 'Evening')
+                
+                # Replace evening activity with the actual event
+                activities[-1] = {
+                    "time": "7:00 PM",
+                    "description": f"Attend {event_title} at {event_venue}"
+                }
+                
+                # Add pre-event preparation
+                activities.insert(-1, {
+                    "time": "5:00 PM",
+                    "description": f"Prepare for {event_title} - dinner and getting ready"
+                })
+            
             day_activities = {
                 "day": day,
-                "location": f"{destination} City Center",
-                "activities": [
-                    {
-                        "time": "9:00 AM",
-                        "description": f"Start day {day} with breakfast at a local café"
-                    },
-                    {
-                        "time": "10:30 AM",
-                        "description": f"Explore the main attractions of {destination}"
-                    },
-                    {
-                        "time": "1:00 PM",
-                        "description": "Lunch at a recommended restaurant"
-                    },
-                    {
-                        "time": "3:00 PM",
-                        "description": f"Visit cultural sites and museums in {destination}"
-                    },
-                    {
-                        "time": "6:00 PM",
-                        "description": "Dinner and evening activities"
-                    }
-                ]
+                "location": event_details.get('venue', f"{destination} City Center") if event_details and day == event_day else f"{destination} City Center",
+                "activities": activities
             }
             fallback_activities.append(day_activities)
         
+        # Create highlights with event included
+        highlights = []
+        if event_details:
+            highlights.append(event_details.get('title', 'Special Event'))
+        highlights.extend([
+            f"Historic {destination} Downtown",
+            f"{destination} Cultural District", 
+            f"Local {destination} Cuisine",
+            f"{destination} Scenic Views"
+        ])
+        
         return {
             "itinerary": fallback_activities,
-            "highlights": [
-                f"Historic {destination} Downtown",
-                f"{destination} Cultural District",
-                f"Local {destination} Cuisine",
-                f"{destination} Scenic Views"
-            ],
+            "highlights": highlights,
             "trip_info": {
                 "duration": f"{days} days",
-                "category": "tourism",
+                "category": "event-centered" if event_details else "tourism",
                 "price_range": "Moderate"
             }
         }
 
-    def generate_itinerary(self, destination, days="1"):
-        """Generate itinerary for destination and duration"""
+    def generate_itinerary(self, destination, days="1", event_details=None):
+        """Generate itinerary for destination and duration centered around an event"""
         cache_key = self._get_cache_key(destination, days)
         
         # Check cache first
@@ -164,10 +210,36 @@ Only return valid JSON, no additional text.
             return self.cache[cache_key]['data']
         
         try:
+            # Prepare event details for prompt
+            if event_details:
+                event_title = event_details.get('title', 'Event')
+                event_date = event_details.get('date', '')
+                event_venue = event_details.get('venue', '')
+                event_description = event_details.get('description', '')
+                
+                # Calculate which day the event should be on (middle day for multi-day trips)
+                try:
+                    num_days = int(days)
+                    main_event_day = min(2, (num_days + 1) // 2) if num_days > 1 else 1
+                except:
+                    main_event_day = 1
+            else:
+                # Fallback for when no event details are provided
+                event_title = "Local Event"
+                event_date = ""
+                event_venue = ""
+                event_description = "Special local event"
+                main_event_day = 1
+            
             # Get AI recommendations
             response = self.chain.invoke({
                 "destination": destination,
-                "days": days
+                "days": days,
+                "event_title": event_title,
+                "event_date": event_date,
+                "event_venue": event_venue,
+                "event_description": event_description,
+                "main_event_day": main_event_day
             })
             raw_json = response.content.strip()
             
@@ -193,7 +265,7 @@ Only return valid JSON, no additional text.
         except Exception as e:
             print(f"Itinerary Agent Error: {e}")
             # Return fallback data
-            fallback = self._get_fallback_data(destination, days)
+            fallback = self._get_fallback_data(destination, days, event_details)
             self.cache[cache_key] = {
                 'data': fallback,
                 'timestamp': time.time()

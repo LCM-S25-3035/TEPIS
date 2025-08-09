@@ -36,6 +36,15 @@ class ItineraryCoordinator:
         self.days = (event_data.get('duration') or '').split(' ')[0] or '1'
         self.cost = event_data.get('cost', 'in-between')
         
+        # Store event details for itinerary generation
+        self.event_details = {
+            'title': event_data.get('event_title', 'Event'),
+            'date': event_data.get('event_date', ''),
+            'venue': event_data.get('event_venue', ''),
+            'description': event_data.get('event_description', ''),
+            'time': event_data.get('event_time', 'Evening')
+        }
+        
         # Get API token from AWS Secrets Manager
         try:
             api_token = get_secret()
@@ -55,7 +64,7 @@ class ItineraryCoordinator:
         # Gather data from each agent
         hotel_data = self.hotel_agent.get_recommendations(self.destination)
         restaurant_data = self.restaurant_agent.get_recommendations(self.destination)
-        itinerary_data = self.itinerary_agent.generate_itinerary(self.destination, self.days)
+        itinerary_data = self.itinerary_agent.generate_itinerary(self.destination, self.days, self.event_details)
         weather_data = self.weather_agent.get_weather(self.destination)
         transportation_data = self.transportation_agent.get_recommendations(self.destination)
 
