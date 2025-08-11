@@ -78,7 +78,7 @@ Current event booking platforms provide isolated experiences - users can discove
 - Multi-language support
 - Corporate travel solutions
 
-**Out of Scope (Current Phase):**
+**Out of Scope :**
 - Direct payment processing
 - Real-time booking confirmation
 - Mobile native applications
@@ -521,12 +521,13 @@ cache_structure = {
 ### Data Gathering:
 
 #### **Event Data Sources:**
-- **Primary:** MongoDB Atlas (ticketmaster collection)
+  - **Primary:** MongoDB Atlas (event collection)
 - **Volume:** 10000+ events across 2 countries
 - **Update Frequency:** Batch updates (weekly/monthly)
 - **Data Quality:** Manual curation and validation
 
 #### **Real-Time Data Sources:**
+- **Ticketmaster API** Ticketmaster API
 - **Weather API:** Open-Meteo (Hourly updates)
 - **AI Generation:** Hugging Face API (On-demand)
 - **Geocoding:** Open-Meteo Geocoding API (Cached)
