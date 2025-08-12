@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test ]
   pull_request:
-    branches: [ main ]
+    branches: [ test ]
 
 jobs:
   test:
@@ -72,8 +72,8 @@ jobs:
     - name: Deploy to EC2
       run: |
         ssh -i ~/.ssh/deploy_key ubuntu@ec2-54-209-152-194.compute-1.amazonaws.com '
-          cd TEPIS_TEST &&
-          git pull origin main &&
+          cd TEPIS &&
+          git pull origin test &&
           docker-compose down &&
           docker-compose up -d --build
         '
