@@ -210,8 +210,12 @@
                             Get comprehensive recommendations for hotels, restaurants, transportation, and daily activities.
                         </p>
                         <div style="text-align: center;">
-                            <a href="{{ url_for('trip_planner', event_id=event._id) }}" class="btn btn-primary">Plan Your Trip</a>
+                            <a href="{{ url_for('trip_planner', event_id=event._id) }}" class="btn btn-secondary" style="margin-right: 1rem;">Quick Plan</a>
+                            <a href="{{ url_for('detailed_trip_planner', event_id=event._id) }}" class="btn btn-primary">🤖 AI Detailed Plan</a>
                         </div>
+                        <p style="text-align: center; color: #94a3b8; margin-top: 1rem; font-size: 0.9rem;">
+                            Try our new AI-powered planner that understands your specific needs!
+                        </p>
                     </div>
                 {% endif %}
                 

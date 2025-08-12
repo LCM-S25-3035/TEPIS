@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Trip Planner - {{ event.event_title }} | TEPIS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .trip-planner-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .planner-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            padding: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .section-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .quick-suggestions {
+            margin-top: 0.5rem;
+        }
+        
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .suggestion-chip {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-chip:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+        
+        .ai-analysis {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .analysis-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .analysis-item span:first-child {
+            font-weight: 500;
+            margin-right: 1rem;
+            min-width: 120px;
+        }
+        
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 6px;
+            width: 100px;
+            margin-left: 1rem;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            background: #10b981;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .generate-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .generate-btn {
+            background: white;
+            color: #8b5cf6;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .loading-spinner {
+            font-size: 3rem;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="logo">
+                <div class="logo-icon">📅</div>
+                <span>TEPIS</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="trip-planner-container">
+            <div class="breadcrumb">
+                <a href="{{ url_for('events') }}">← Back to Events</a> / 
+                <a href="{{ url_for('event_detail', event_id=event._id) }}">{{ event.event_title[:30] }}...</a>
+            </div>
+            
+            <h1 style="text-align: center; margin-bottom: 2rem; color: #1e293b;">
+                🎯 AI-Powered Trip Planner
+            </h1>
+            <p style="text-align: center; color: #64748b; margin-bottom: 3rem;">
+                Tell us your specific needs and our AI agents will create the perfect itinerary for <strong>{{ event.event_title }}</strong>
+            </p>
+
+            <form id="detailed-trip-form" method="POST" action="{{ url_for('generate_detailed_trip', event_id=event._id) }}">
+                <!-- Basic Preferences -->
+                <div class="planner-section">
+                    <div class="section-header">
+                        <div class="section-icon">⚙️</div>
+                        <div class="section-title">Basic Preferences</div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="duration">Trip Duration</label>
+                            <select id="duration" name="duration" required>
+                                <option value="2 days">2 days</option>
+                                <option value="3 days" selected>3 days</option>
+                                <option value="5 days">5 days</option>
+                                <option value="7 days">7 days</option>
+                                <option value="10 days">10 days</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="budget">Overall Budget</label>
+                            <select id="budget" name="budget" required>
+                                <option value="budget">Budget-Friendly</option>
+                                <option value="in-between" selected>Mid-Range</option>
+                                <option value="luxury">Luxury Experience</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="group_size">Group Size</label>
+                            <input type="number" id="group_size" name="group_size" value="2" min="1" max="20">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user_address">Your Location (Optional)</label>
+                            <input type="text" id="user_address" name="user_address" 
+                                   placeholder="Enter your city or address for transportation planning">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Requirements -->
+                <div class="planner-section">
+                    <div class="section-header">
+                        <div class="section-icon">📝</div>
+                        <div class="section-title">Tell Us Your Specific Needs</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="detailed_requirements">
+                            Describe what you're looking for in detail
+                        </label>
+                        <textarea id="detailed_requirements" name="detailed_requirements" 
+                                  placeholder="Example: I need a luxury hotel with a pool near the venue, vegetarian-friendly restaurants, and activities for kids in the morning. I prefer not to drive and want to try local Italian cuisine..."
+                                  rows="5"></textarea>
+                        
+                        <div class="quick-suggestions">
+                            <small style="color: #64748b;">💡 Quick suggestions (click to add):</small>
+                            <div class="suggestion-chips">
+                                <span class="suggestion-chip" data-text="vegetarian restaurants">🥗 Vegetarian dining</span>
+                                <span class="suggestion-chip" data-text="luxury hotel with spa">🏨 Luxury hotel with spa</span>
+                                <span class="suggestion-chip" data-text="activities for kids">👨‍👩‍👧‍👦 Family activities</span>
+                                <span class="suggestion-chip" data-text="no driving, prefer public transport">🚇 Public transport</span>
+                                <span class="suggestion-chip" data-text="pet-friendly accommodation">🐕 Pet-friendly places</span>
+                                <span class="suggestion-chip" data-text="rooftop restaurants with city views">🏙️ Scenic dining</span>
+                                <span class="suggestion-chip" data-text="morning activities before the event">🌅 Morning activities</span>
+                                <span class="suggestion-chip" data-text="accessible facilities">♿ Accessibility needs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Display -->
+                <div id="ai-analysis" class="ai-analysis" style="display: none;">
+                    <h3>🤖 AI Analysis Results</h3>
+                    <div id="analysis-content"></div>
+                </div>
+
+                <!-- Generate Button -->
+                <div class="generate-section">
+                    <h3>Ready to Create Your Perfect Trip?</h3>
+                    <p>Our AI agents will analyze your requirements and coordinate to build a personalized itinerary</p>
+                    <button type="submit" class="generate-btn" id="generate-button">
+                        <span id="button-text">🚀 Generate My Itinerary</span>
+                        <span id="button-loading" style="display: none;">🔄 Analyzing & Creating...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">🤖</div>
+            <h3 style="margin: 1rem 0;">AI Agents Working...</h3>
+            <p>Analyzing your requirements and coordinating the perfect trip</p>
+            <div style="margin-top: 1rem;">
+                <div id="agent-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TEPIS</h3>
+                <p>AI-powered trip planning that understands your unique needs.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 TEPIS. Crafted with AI for extraordinary experiences.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Suggestion chips functionality
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                const textarea = document.getElementById('detailed_requirements');
+                const currentText = textarea.value;
+                const suggestionText = this.dataset.text;
+                
+                if (currentText) {
+                    textarea.value = currentText + (currentText.endsWith('.') ? ' ' : '. ') + suggestionText;
+                } else {
+                    textarea.value = suggestionText;
+                }
+                
+                // Add visual feedback
+                this.style.background = '#10b981';
+                this.style.color = 'white';
+                this.style.borderColor = '#10b981';
+                
+                setTimeout(() => {
+                    this.style.background = '#f3f4f6';
+                    this.style.color = '#374151';
+                    this.style.borderColor = '#d1d5db';
+                }, 1000);
+                
+                // Trigger analysis
+                analyzeRequirements();
+            });
+        });
+        
+        // Real-time analysis
+        document.getElementById('detailed_requirements').addEventListener('input', function() {
+            if (this.value.trim().length > 10) {
+                analyzeRequirements();
+            } else {
+                document.getElementById('ai-analysis').style.display = 'none';
+            }
+        });
+        
+        function analyzeRequirements() {
+            const requirements = document.getElementById('detailed_requirements').value;
+            if (requirements.trim().length < 10) return;
+            
+            // Simulate AI analysis (in real implementation, this would call the context analyzer)
+            const mockAnalysis = {
+                detected_needs: simulateDetection(requirements),
+                confidence: Math.floor(Math.random() * 30) + 70,
+                preferences_found: requirements.split(' ').filter(word => 
+                    ['hotel', 'restaurant', 'transport', 'activity', 'luxury', 'budget', 'vegetarian'].includes(word.toLowerCase())
+                ).length
+            };
+            
+            displayAnalysis(mockAnalysis);
+        }
+        
+        function simulateDetection(text) {
+            const detections = [];
+            if (text.toLowerCase().includes('hotel') || text.toLowerCase().includes('stay') || text.toLowerCase().includes('accommodation')) {
+                detections.push('Hotel');
+            }
+            if (text.toLowerCase().includes('restaurant') || text.toLowerCase().includes('food') || text.toLowerCase().includes('dining')) {
+                detections.push('Restaurant');
+            }
+            if (text.toLowerCase().includes('transport') || text.toLowerCase().includes('travel') || text.toLowerCase().includes('drive')) {
+                detections.push('Transportation');
+            }
+            if (text.toLowerCase().includes('activity') || text.toLowerCase().includes('tour') || text.toLowerCase().includes('visit')) {
+                detections.push('Itinerary');
+            }
+            return detections.length > 0 ? detections.join(', ') : 'General Planning';
+        }
+        
+        function displayAnalysis(analysis) {
+            const analysisDiv = document.getElementById('ai-analysis');
+            const contentDiv = document.getElementById('analysis-content');
+            
+            contentDiv.innerHTML = `
+                <div class="analysis-item">
+                    <span>Detected Needs:</span>
+                    <span>${analysis.detected_needs}</span>
+                </div>
+                <div class="analysis-item">
+                    <span>AI Confidence:</span>
+                    <span>${analysis.confidence}%</span>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${analysis.confidence}%"></div>
+                    </div>
+                </div>
+                <div class="analysis-item">
+                    <span>Preferences Found:</span>
+                    <span>${analysis.preferences_found} specific requirements</span>
+                </div>
+                <div class="analysis-item">
+                    <span>Will Consult:</span>
+                    <span>${analysis.detected_needs.replace(/,/g, ', ')} Agents</span>
+                </div>
+            `;
+            
+            analysisDiv.style.display = 'block';
+        }
+        
+        // Form submission
+        document.getElementById('detailed-trip-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const requirements = document.getElementById('detailed_requirements').value.trim();
+            if (requirements.length < 20) {
+                alert('Please provide more detailed requirements (at least 20 characters) to help our AI create the best itinerary for you.');
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('generate-button').disabled = true;
+            document.getElementById('button-text').style.display = 'none';
+            document.getElementById('button-loading').style.display = 'inline';
+            
+            // Simulate agent coordination
+            simulateAgentWork();
+            
+            // Submit the form
+            setTimeout(() => {
+                this.submit();
+            }, 2000);
+        });
+        
+        function simulateAgentWork() {
+            const statuses = [
+                'Context Analyzer: Processing your requirements...',
+                'Hotel Agent: Finding accommodations...',
+                'Restaurant Agent: Searching dining options...',
+                'Transportation Agent: Planning routes...',
+                'Itinerary Agent: Creating schedule...',
+                'Coordinator: Finalizing your perfect trip...'
+            ];
+            
+            let currentStatus = 0;
+            const statusDiv = document.getElementById('agent-status');
+            
+            const statusInterval = setInterval(() => {
+                if (currentStatus < statuses.length) {
+                    statusDiv.innerHTML = `<p style="margin: 0.5rem 0; color: #10b981;">✅ ${statuses[currentStatus]}</p>` + statusDiv.innerHTML;
+                    currentStatus++;
+                } else {
+                    clearInterval(statusInterval);
+                }
+            }, 300);
+        }
+    </script>
+</body>
+</html>

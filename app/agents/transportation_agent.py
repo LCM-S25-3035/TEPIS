@@ -186,17 +186,53 @@ Only return valid JSON, no additional text.
             }
         }
 
-    def get_recommendations(self, destination):
-        """Get transportation recommendations for destination"""
-        cache_key = self._get_cache_key(destination)
+    def get_recommendations(self, destination, additional_context=""):
+        """Get transportation recommendations for destination with optional context"""
+        cache_key = self._get_cache_key(destination + additional_context)
         
         # Check cache first
         if cache_key in self.cache and self._is_cache_valid(self.cache[cache_key]):
             return self.cache[cache_key]['data']
         
         try:
-            # Get AI recommendations
-            response = self.chain.invoke({"destination": destination})
+            # Modify prompt if additional context provided
+            if additional_context:
+                context_prompt = f"""
+Generate transportation information for {{destination}} including flights, public transit, and local options.
+Additional requirements: {additional_context}
+
+Return ONLY JSON in this exact format:
+
+{{{{
+  "transportation": {{{{
+    "flights": {{{{
+      "major_airports": ["Airport Name (CODE)"],
+      "airlines": ["Airline names"],
+      "booking_tips": "Tips for booking flights"
+    }}}},
+    "local_transit": {{{{
+      "public_system": {{{{
+        "name": "System name",
+        "types": ["bus", "metro"],
+        "day_pass": "$X",
+        "single_ride": "$X"
+      }}}},
+      "walking": {{{{
+        "walkability_score": 85,
+        "description": "Very walkable city"
+      }}}}
+    }}}}
+  }}}}
+}}}}
+
+Only return valid JSON, no additional text.
+"""
+                context_template = PromptTemplate.from_template(context_prompt)
+                chain = context_template | self.llm
+                response = chain.invoke({"destination": destination})
+            else:
+                # Get AI recommendations with default prompt
+                response = self.chain.invoke({"destination": destination})
             raw_json = response.content.strip()
             
             # Clean up common JSON issues

@@ -116,17 +116,46 @@ Only return valid JSON, no additional text.
             ]
         }
 
-    def get_recommendations(self, destination):
-        """Get hotel recommendations for destination"""
-        cache_key = self._get_cache_key(destination)
+    def get_recommendations(self, destination, additional_context=""):
+        """Get hotel recommendations for destination with optional context"""
+        cache_key = self._get_cache_key(destination + additional_context)
         
         # Check cache first
         if cache_key in self.cache and self._is_cache_valid(self.cache[cache_key]):
             return self.cache[cache_key]['data']
         
         try:
-            # Get AI recommendations
-            response = self.chain.invoke({"destination": destination})
+            # Modify prompt if additional context provided
+            if additional_context:
+                context_prompt = f"""
+Generate a list of 5 hotels in {{destination}} suitable for event attendees.
+Additional requirements: {additional_context}
+
+Return ONLY JSON in this exact format:
+
+{{{{
+  "hotels": [
+    {{{{
+      "name": "Hotel Name",
+      "description": "Brief description of the hotel",
+      "rating": 4.5,
+      "price_category": "Luxury",
+      "location": "Hotel address or neighborhood",
+      "amenities": ["Free WiFi", "Spa", "Gym"],
+      "booking_url": "https://booking.com"
+    }}}}
+  ]
+}}}}
+
+Only return valid JSON, no additional text.
+"""
+                context_template = PromptTemplate.from_template(context_prompt)
+                chain = context_template | self.llm
+                response = chain.invoke({"destination": destination})
+            else:
+                # Get AI recommendations with default prompt
+                response = self.chain.invoke({"destination": destination})
+            
             raw_json = response.content.strip()
             
             # Clean up common JSON issues

@@ -201,9 +201,9 @@ Only return valid JSON, no additional text.
             }
         }
 
-    def generate_itinerary(self, destination, days="1", event_details=None):
-        """Generate itinerary for destination and duration centered around an event"""
-        cache_key = self._get_cache_key(destination, days)
+    def generate_itinerary(self, destination, days="1", event_details=None, additional_context=""):
+        """Generate itinerary for destination and duration centered around an event with optional context"""
+        cache_key = self._get_cache_key(destination, days + additional_context)
         
         # Check cache first
         if cache_key in self.cache and self._is_cache_valid(self.cache[cache_key]):
